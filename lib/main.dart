@@ -17,7 +17,7 @@ class MiAppCentralita extends StatelessWidget {
         primarySwatch: Colors.teal,
         useMaterial3: true, // diseño moderno
       ),
-      home: const SplashScreen(),
+      home: const Init(),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
 
 class HorizontalDinamycSlide extends StatefulWidget {
-  const HorizontalDinamycSlide({super.key});
+  final String title;
+  final IconData icons;
+  final bool state;
+  final double value;
+
+  const HorizontalDinamycSlide({super.key, 
+    required this.title,
+    required this.icons,
+    this.state = false,
+    required this.value,
+  });
 
   @override
   State<HorizontalDinamycSlide> createState() => _HorizontalDinamycSlide();
 }
 
 class _HorizontalDinamycSlide extends State<HorizontalDinamycSlide> {
-  bool _state = false;
-  double temperatura = 22.0;
+  late bool _state;
+  late double _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _state = widget.state;
+    _value = widget.value;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +42,12 @@ class _HorizontalDinamycSlide extends State<HorizontalDinamycSlide> {
         children: [
           Row(
             children: [
-              Icon(Icons.thermostat, color: _state ? Colors.orange : Colors.grey),
+              Icon(widget.icons, color: _state ? Colors.orange : Colors.grey),
               const SizedBox(width: 12),
               const Text('Berogailue', style: TextStyle(fontSize: 18)),
               const Spacer(),
               if (_state)
-                Text('${temperatura.toStringAsFixed(1)} °C',
+                Text('${_value.toStringAsFixed(1)} °C',
                   style: const TextStyle(fontSize: 16)),
               Switch(
                 value: _state,
@@ -44,15 +61,15 @@ class _HorizontalDinamycSlide extends State<HorizontalDinamycSlide> {
           ),
           const SizedBox(height: 10),
           Slider(
-            value: temperatura,
+            value: _value,
             min: 18,
             max: 50,
             divisions: 32,
-            label: '${temperatura.toStringAsFixed(1)} °C',
+            label: '${_value.toStringAsFixed(1)} °C',
             onChanged: _state
                 ? (value) {
                     setState(() {
-                      temperatura = value;
+                      _value = value;
                     });
                   }
                 : null,

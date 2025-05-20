@@ -7,7 +7,9 @@ import 'verticalStaticSlide.dart';
 import 'infoWidget.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key});
+  final Map<String, dynamic> data;
+
+  const Home({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -75,31 +77,26 @@ class Home extends StatelessWidget {
                 ),
             ),
             // Main content
-            const Expanded(
+            Expanded(
               child: Padding(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    SwitchWidget(),
-                    SizedBox(height: 20),
-                    HorizontalDinamycSlide(),
-                    SizedBox(height: 20),
+                    SwitchWidget(state: data['out_light']),
+                    const SizedBox(height: 20),
+                    HorizontalDinamycSlide(state: data['hot_state'], value: data['hot_temp'], title: 'Berogailua', icons: Icons.thermostat),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        VerticalStaticSlide(value: 85, title: 'Ur garbijek'),
-                        VerticalStaticSlide(
-                          value: 85,
-                          title: 'Ur Loijek',
-                          inverted: true,
-                          icon: Icon(Icons.water, color: Color.fromARGB(255, 119, 124, 128)),
-                        ),
+                        VerticalStaticSlide(value: data['water_clean'], title: 'Ur garbijek'),
+                        VerticalStaticSlide(value: data['water_dirt'], title: 'Ur Loijek', inverted: true, icon: const Icon(Icons.water, color: Color.fromARGB(255, 119, 124, 128)),),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    InfoWidget(value: 13.8, title: 'Vº Kabinie', icon: Icon(Icons.bolt, color: Colors.grey)),
-                    SizedBox(height: 20),
-                    InfoWidget(value: 12.8, title: 'Vº Gelie', icon: Icon(Icons.bolt, color: Colors.grey)),
+                    const SizedBox(height: 20),
+                    InfoWidget(value: data['energy_cabine'], title: 'Vº Kabinie', icon: const Icon(Icons.bolt, color: Colors.grey)),
+                    const SizedBox(height: 20),
+                    InfoWidget(value: data['energy_room'], title: 'Vº Gelie', icon: const Icon(Icons.bolt, color: Colors.grey)),
                   ],
                 ),
               ),
