@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home.dart';
+import 'init.dart';
 
 void main() {
   runApp(const MiAppCentralita());
@@ -17,7 +17,7 @@ class MiAppCentralita extends StatelessWidget {
         primarySwatch: Colors.teal,
         useMaterial3: true, // diseño moderno
       ),
-      home: const Home(),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
