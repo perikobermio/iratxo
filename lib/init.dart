@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+//import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import 'home.dart';
 
@@ -20,8 +21,18 @@ class _Init extends State<Init> {
 
   Future<void> initializeApp() async {
     Map<String, dynamic> data = {};
+    
+    //List<String> bluetoothDevices = [];
+    //FlutterBlue flutterBlue = FlutterBlue.instance;
+    //await flutterBlue.startScan(timeout: const Duration(seconds: 2));
 
-    await Future.delayed(const Duration(seconds: 1));
+    /*
+    await Future.delayed(const Duration(seconds: 2));
+    await flutterBlue.stopScan();
+    await scanSubscription.cancel();
+
+    data['bluetooth_devices'] = bluetoothDevices;
+    await Future.delayed(const Duration(seconds: 1));*/
 
     setState(() {
       loadingText = "Autokarekin sinkronizatzen...";

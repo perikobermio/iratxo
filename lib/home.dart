@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'switchWidget.dart';
-import 'horizontalDinamycSlide.dart';
-import 'verticalStaticSlide.dart';
-import 'infoWidget.dart';
+import 'switch_widget.dart';
+import 'horizontal_dinamyc_slide.dart';
+import 'vertical_static_slide.dart';
+import 'info_widget.dart';
 
 class Home extends StatelessWidget {
   final Map<String, dynamic> data;
