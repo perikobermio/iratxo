@@ -3,9 +3,9 @@
 #include <BLEUtils.h>
 #include <BLE2902.h>
 
-#define SERVICE_UUID           "12345678-1234-1234-1234-1234567890ab"
-#define CHARACTERISTIC_UUID_RX "12345678-1234-1234-1234-1234567890ac"
-#define CHARACTERISTIC_UUID_TX "12345678-1234-1234-1234-1234567890ad"
+#define SERVICE_UUID           "8ea03f1f-de1b-4c80-bed8-4e4cc24822e2"
+#define CHARACTERISTIC_UUID_RX "0e0f8877-e007-4095-ad2e-b85462fc2ae8"
+#define CHARACTERISTIC_UUID_TX "3166f32a-a7ce-4e90-a28d-61907aaed70c"
 
 BLECharacteristic *pTxCharacteristic;
 bool deviceConnected = false;
@@ -20,6 +20,7 @@ class ServerCallbacks : public BLEServerCallbacks {
 
   void onDisconnect(BLEServer* pServer) {
     deviceConnected = false;
+    pServer->startAdvertising();
     Serial.println("❌ Disconnected");
   }
 };
