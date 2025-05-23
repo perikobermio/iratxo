@@ -62,9 +62,9 @@ class _HorizontalDinamycSlide extends State<HorizontalDinamycSlide> {
           const SizedBox(height: 10),
           Slider(
             value: _value,
-            min: 18,
-            max: 50,
-            divisions: 32,
+            min: 10,
+            max: 40,
+            divisions: 30,
             label: '${_value.toStringAsFixed(1)} °C',
             onChanged: _state
                 ? (value) {

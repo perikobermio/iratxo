@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import 'home.dart';
 
@@ -12,6 +12,8 @@ class Init extends StatefulWidget {
 
 class _Init extends State<Init> {
   String loadingText = "Iratxo Zentralita";
+  final String targetName = "IRATXO";
+  BluetoothDevice? _connectedDevice;
 
   @override
   void initState() {
@@ -21,41 +23,51 @@ class _Init extends State<Init> {
 
   Future<void> initializeApp() async {
     Map<String, dynamic> data = {};
-    
-    //List<String> bluetoothDevices = [];
-    //FlutterBlue flutterBlue = FlutterBlue.instance;
-    //await flutterBlue.startScan(timeout: const Duration(seconds: 2));
-
-    /*
-    await Future.delayed(const Duration(seconds: 2));
-    await flutterBlue.stopScan();
-    await scanSubscription.cancel();
-
-    data['bluetooth_devices'] = bluetoothDevices;
-    await Future.delayed(const Duration(seconds: 1));*/
 
     setState(() {
       loadingText = "Autokarekin sinkronizatzen...";
     });
 
-    await Future.delayed(const Duration(seconds: 2));
+    await FlutterBluePlus.adapterState.where((s) => s == BluetoothAdapterState.on).first;
+    
+    await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
+    FlutterBluePlus.scanResults.listen((results) async {
+      for (ScanResult result in results) {
 
-    setState(() {
-      loadingText = "Datuak eskuratzen...";
+        final device = result.device;
+        if (result.device.platformName == targetName) {
+          FlutterBluePlus.stopScan();
 
-      data['out_light']     = true;
-      data['hot_state']     = false;
-      data['hot_temp']      = 30.0;
-      data['water_clean']   = 83.0;
-      data['water_dirt']    = 73.0;
-      data['energy_cabine'] = 13.8;
-      data['energy_room']   = 12.8;
+          try {
+            await device.connect(autoConnect: false);
 
+            setState(() {
+              _connectedDevice = result.device;
+              loadingText = "Konektatuta. Datuak eskuratzen...";
+
+              data['out_light']     = true;
+              data['hot_state']     = false;
+              data['hot_temp']      = 20.0;
+              data['water_clean']   = 83.0;
+              data['water_dirt']    = 73.0;
+              data['energy_cabine'] = 13.8;
+              data['energy_room']   = 12.8;
+
+            });
+
+            if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home(data: data)));
+          } catch (e) {
+            setState(() {
+              loadingText = "Errore bat egon da sinkronizatzerakoan";
+            });
+
+            return;
+          }
+
+          break;
+        }
+      }
     });
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Home(data: data)));
   }
 
   @override
