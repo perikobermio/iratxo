@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'home.dart';
 import 'ble.dart';
-import 'data.dart';
 
 class Init extends StatefulWidget {
   const Init({super.key});
@@ -22,7 +21,6 @@ class _Init extends State<Init> {
 
   Future<void> initializeApp() async {
     final ble  = BleService();
-    final data = Data();
 
     await ble.connect();
 

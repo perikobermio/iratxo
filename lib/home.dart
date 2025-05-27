@@ -78,16 +78,11 @@ class Home extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    ValueListenableBuilder<bool>(
-                      valueListenable: data.v['out_light'],
-                      builder: (context, value, _) {
-                        return SwitchWidget(
-                          state: value,
-                          onChanged: (bool v) async {
-                            await ble.command(v == false ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
-                            data.v['out_light'].value = v;
-                          },
-                        );
+                    SwitchWidget(
+                      state: data.v['out_light'],
+                      onChanged: (v) async {
+                        await ble.command(v ? 'OUT_LIGHT_OFF' : 'OUT_LIGHT_ON');
+                        data.v['out_light'].value = v;
                       },
                     ),
                     const SizedBox(height: 20),
