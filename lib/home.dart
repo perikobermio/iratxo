@@ -78,11 +78,18 @@ class Home extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    SwitchWidget(state: data.v['out_light'], onChanged:  (bool v) { 
-                      data.v['out_light'] = v;
-                      print(v);
-                      ble.command(v == false ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
-                    }),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: data.v['out_light'],
+                      builder: (context, value, _) {
+                        return SwitchWidget(
+                          state: value,
+                          onChanged: (bool v) async {
+                            await ble.command(v == false ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
+                            data.v['out_light'].value = v;
+                          },
+                        );
+                      },
+                    ),
                     const SizedBox(height: 20),
                     HorizontalDinamycSlide(state: data.v['hot_state'], value: data.v['hot_temp'], title: 'Berogailua', icons: Icons.thermostat),
                     const SizedBox(height: 20),

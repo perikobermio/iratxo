@@ -1,6 +1,7 @@
 // ini.dart
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'dart:convert';
+import 'dart:async';
 
 import 'data.dart';
 
@@ -9,7 +10,7 @@ class BleService {
   BleService._privateConstructor();
   static final BleService _instance = BleService._privateConstructor();
   factory BleService() => _instance;
-  Function(Map<String, dynamic> response)? onResponseReceived;
+  Completer<Map<String, dynamic>>? _pendingCommand;
 
   final data = Data();
 
@@ -51,19 +52,8 @@ class BleService {
 
             await listenCommand();
 
-            onResponseReceived = (Map<String, dynamic> response) {
-              data.v['out_light']     = response['OUT_LIGHT'] == 1 ? false : true;
-              print('+++++++');
-              print(data.v['out_light']);
-              data.v['hot_state']     = false;
-              data.v['hot_temp']      = 0.0;
-              data.v['water_clean']   = 83.0;
-              data.v['water_dirt']    = 73.0;
-              data.v['energy_cabine'] = 13.8;
-              data.v['energy_room']   = 12.8;
-            };
-
-            await command("READ_VALUES");
+            final response              = await command("READ_VALUES");
+            data.v['out_light'].value   = response['OUT_LIGHT'] == 1 ? false : true;
           
           } catch (e) {
               print("Error BLE: $e");
@@ -74,9 +64,13 @@ class BleService {
 
   }
 
-  Future<void> command(String command) async {
+  Future<Map<String, dynamic>> command(String cmd) async {
     if (_rx == null) throw Exception('RX Característica no inicializada');
-    await _rx!.write(command.codeUnits, withoutResponse: false);
+    _pendingCommand = Completer<Map<String, dynamic>>();
+
+    await _rx!.write(cmd.codeUnits, withoutResponse: false);
+
+    return _pendingCommand!.future;
   }
 
   Future<void> listenCommand() async {
@@ -85,15 +79,22 @@ class BleService {
     await _tx!.setNotifyValue(true);
 
     _tx!.lastValueStream.listen((value) {
-      final response = String.fromCharCodes(value);
-      if(response.isEmpty || response == "") return;
-      Map<String, dynamic> data = jsonDecode(response);
+      try {
+        String res = String.fromCharCodes(value);
+        if(res.isEmpty || res == "") return;
+        final response = jsonDecode(res);
 
-      if (onResponseReceived != null) {
-        onResponseReceived!(data);
+        if (_pendingCommand != null && !_pendingCommand!.isCompleted) {
+          _pendingCommand!.complete(response);
+        }
+      } catch (e) {
+        print("Error al parsear respuesta: $e");
+        if (_pendingCommand != null && !_pendingCommand!.isCompleted) {
+          _pendingCommand!.completeError(e);
+        }
       }
-      
     });
+
   }
 
   Future<void> disconnect() async {

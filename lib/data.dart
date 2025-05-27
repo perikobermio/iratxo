@@ -1,4 +1,4 @@
-// ini.dart
+import 'package:flutter/material.dart';
 
 class Data {
 
@@ -7,7 +7,7 @@ class Data {
   factory Data() => _instance;
 
   Map<String, dynamic> v = {
-    'out_light':      false,
+    'out_light':      ValueNotifier<bool>(false),
     'hot_state':      false,
     'hot_temp':       15.0,
     'water_clean':    0.0,
