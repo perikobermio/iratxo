@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class SwitchWidget extends StatefulWidget {
   final bool state;
+  final void Function(bool) onChanged;
 
-  const SwitchWidget({super.key, required this.state});
+  const SwitchWidget({super.key, required this.state, required this.onChanged});
 
   @override
   State<SwitchWidget> createState() => _SwitchWidgetState();
@@ -16,6 +17,14 @@ class _SwitchWidgetState extends State<SwitchWidget> {
   void initState() {
     super.initState();
     _state = widget.state;
+  }
+
+  void _handleChanged(bool value) {
+    setState(() {
+      _state = value;
+    });
+    
+    widget.onChanged.call(value);
   }
 
   @override
@@ -34,11 +43,7 @@ class _SwitchWidgetState extends State<SwitchWidget> {
           const Spacer(),
           Switch(
             value: _state,
-            onChanged: (value) {
-              setState(() {
-                _state = value;
-              });
-            },
+            onChanged: _handleChanged,
           ),
         ],
       ),

@@ -28,14 +28,6 @@ class _Init extends State<Init> {
 
     setState(() {
       loadingText = "Autokarekin sinkronizatzen...";
-
-      data.v['out_light']     = true;
-      data.v['hot_state']     = false;
-      data.v['hot_temp']      = 20.0;
-      data.v['water_clean']   = 83.0;
-      data.v['water_dirt']    = 73.0;
-      data.v['energy_cabine'] = 13.8;
-      data.v['energy_room']   = 12.8;
     });
         
     if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Home()));

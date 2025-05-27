@@ -1,11 +1,17 @@
 // ini.dart
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'dart:convert';
+
+import 'data.dart';
 
 class BleService {
 
   BleService._privateConstructor();
   static final BleService _instance = BleService._privateConstructor();
   factory BleService() => _instance;
+  Function(Map<String, dynamic> response)? onResponseReceived;
+
+  final data = Data();
 
   final String targetName = "IRATXO";
   BluetoothDevice? connectedDevice;
@@ -42,6 +48,22 @@ class BleService {
                 }
               }
             }
+
+            await listenCommand();
+
+            onResponseReceived = (Map<String, dynamic> response) {
+              data.v['out_light']     = response['OUT_LIGHT'] == 1 ? false : true;
+              print('+++++++');
+              print(data.v['out_light']);
+              data.v['hot_state']     = false;
+              data.v['hot_temp']      = 0.0;
+              data.v['water_clean']   = 83.0;
+              data.v['water_dirt']    = 73.0;
+              data.v['energy_cabine'] = 13.8;
+              data.v['energy_room']   = 12.8;
+            };
+
+            await command("READ_VALUES");
           
           } catch (e) {
               print("Error BLE: $e");
@@ -52,9 +74,26 @@ class BleService {
 
   }
 
-  Future<void> writeCommand(String command) async {
+  Future<void> command(String command) async {
+    if (_rx == null) throw Exception('RX Característica no inicializada');
+    await _rx!.write(command.codeUnits, withoutResponse: false);
+  }
+
+  Future<void> listenCommand() async {
     if (_tx == null) throw Exception('TX Característica no inicializada');
-    await _tx!.write(command.codeUnits, withoutResponse: false);
+
+    await _tx!.setNotifyValue(true);
+
+    _tx!.lastValueStream.listen((value) {
+      final response = String.fromCharCodes(value);
+      if(response.isEmpty || response == "") return;
+      Map<String, dynamic> data = jsonDecode(response);
+
+      if (onResponseReceived != null) {
+        onResponseReceived!(data);
+      }
+      
+    });
   }
 
   Future<void> disconnect() async {

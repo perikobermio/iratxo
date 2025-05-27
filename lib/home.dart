@@ -6,13 +6,15 @@ import 'horizontal_dinamyc_slide.dart';
 import 'vertical_static_slide.dart';
 import 'info_widget.dart';
 import 'data.dart';
+import 'ble.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final data = Data();
+    final data  = Data();
+    final ble   = BleService();
 
     return Scaffold(
       
@@ -76,7 +78,11 @@ class Home extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    SwitchWidget(state: data.v['out_light']),
+                    SwitchWidget(state: data.v['out_light'], onChanged:  (bool v) { 
+                      data.v['out_light'] = v;
+                      print(v);
+                      ble.command(v == false ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
+                    }),
                     const SizedBox(height: 20),
                     HorizontalDinamycSlide(state: data.v['hot_state'], value: data.v['hot_temp'], title: 'Berogailua', icons: Icons.thermostat),
                     const SizedBox(height: 20),
