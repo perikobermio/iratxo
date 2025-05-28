@@ -14,11 +14,10 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data  = Data();
-    final ble   = BleService();
+    final data = Data();
+    final ble = BleService();
 
     return Scaffold(
-      
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -29,7 +28,7 @@ class Home extends StatelessWidget {
         ),
         child: Column(
           children: [
-            
+            // HEADER (Fijo)
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -51,31 +50,33 @@ class Home extends StatelessWidget {
               ),
               padding: const EdgeInsets.only(top: 48, bottom: 24),
               width: double.infinity,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(width: 1), // Placeholder for symmetry
-                    const Text('Iratxo kudeaketa',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(width: 1), // Placeholder for symmetry
+                  const Text(
+                    'Iratxo kudeaketa',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.exit_to_app, color: Colors.white),
-                      tooltip: 'Exit',
-                      onPressed: () {
-                        SystemNavigator.pop();
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.exit_to_app, color: Colors.white),
+                    tooltip: 'Exit',
+                    onPressed: () {
+                      SystemNavigator.pop();
+                    },
+                  ),
+                ],
+              ),
             ),
-            // Main content
+
+            // CONTENIDO SCROLLABLE
             Expanded(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
@@ -88,6 +89,13 @@ class Home extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 20),
+                    HorizontalDinamycSlide(
+                      state: data.v['hot_state'],
+                      value: data.v['hot_temp'],
+                      title: 'Berogailua',
+                      icons: Icons.thermostat,
+                    ),
+                    const SizedBox(height: 20),
                     TripleSwitchWidget(
                       title: 'Ure',
                       state: data.v['water_state'],
@@ -96,19 +104,31 @@ class Home extends StatelessWidget {
                       },
                     ),
                     const SizedBox(height: 20),
-                    HorizontalDinamycSlide(state: data.v['hot_state'], value: data.v['hot_temp'], title: 'Berogailua', icons: Icons.thermostat),
-                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         VerticalStaticSlide(value: data.v['water_clean'], title: 'Ur garbijek'),
-                        VerticalStaticSlide(value: data.v['water_dirt'], title: 'Ur Loijek', inverted: true, icon: const Icon(Icons.water, color: Color.fromARGB(255, 119, 124, 128)),),
+                        VerticalStaticSlide(
+                          value: data.v['water_dirt'],
+                          title: 'Ur Loijek',
+                          inverted: true,
+                          icon: const Icon(Icons.water, color: Color.fromARGB(255, 119, 124, 128)),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
-                    InfoWidget(value: data.v['energy_cabine'], title: 'Vº Kabinie', icon: const Icon(Icons.bolt, color: Colors.grey)),
+                    InfoWidget(
+                      value: data.v['energy_cabine'],
+                      title: 'Vº Kabinie',
+                      icon: const Icon(Icons.bolt, color: Colors.grey),
+                    ),
                     const SizedBox(height: 20),
-                    InfoWidget(value: data.v['energy_room'], title: 'Vº Gelie', icon: const Icon(Icons.bolt, color: Colors.grey)),
+                    InfoWidget(
+                      value: data.v['energy_room'],
+                      title: 'Vº Gelie',
+                      icon: const Icon(Icons.bolt, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 40), // Espacio final opcional
                   ],
                 ),
               ),
