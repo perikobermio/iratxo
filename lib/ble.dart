@@ -65,7 +65,8 @@ class BleService {
   }
 
   Future<Map<String, dynamic>> command(String cmd) async {
-    if (_rx == null) throw Exception('RX Característica no inicializada');
+    if (_rx == null) await connect();
+
     _pendingCommand = Completer<Map<String, dynamic>>();
 
     await _rx!.write(cmd.codeUnits, withoutResponse: false);
@@ -74,7 +75,7 @@ class BleService {
   }
 
   Future<void> listenCommand() async {
-    if (_tx == null) throw Exception('TX Característica no inicializada');
+    if (_tx == null) await connect();
 
     await _tx!.setNotifyValue(true);
 
@@ -88,7 +89,6 @@ class BleService {
           _pendingCommand!.complete(response);
         }
       } catch (e) {
-        print("Error al parsear respuesta: $e");
         if (_pendingCommand != null && !_pendingCommand!.isCompleted) {
           _pendingCommand!.completeError(e);
         }
