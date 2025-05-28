@@ -9,6 +9,11 @@
 #define CHARACTERISTIC_UUID_TX "3166f32a-a7ce-4e90-a28d-61907aaed70c"
 
 #define OUTLIGHT_PIN 27
+#define SWITCH_OUTLIGHT_PIN 14
+
+bool lastSwitchState = HIGH;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
 
 BLECharacteristic *pTxCharacteristic;
 bool deviceConnected = false;
@@ -68,8 +73,8 @@ void setup() {
   Serial.begin(115200);
   
   pinMode(OUTLIGHT_PIN, OUTPUT);
+  pinMode(SWITCH_OUTLIGHT_PIN, INPUT_PULLUP);
   digitalWrite(OUTLIGHT_PIN, HIGH);
-  //Serial.println(digitalRead(OUTLIGHT_PIN));
 
   ////////////////////////////////////////
 
@@ -96,6 +101,46 @@ void setup() {
   Serial.println("IRATXO BLE prest dago ;-)");
 }
 
+void read_switch_out_light() {
+  int reading = digitalRead(SWITCH_OUTLIGHT_PIN);
+
+  if (reading != lastSwitchState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != digitalRead(SWITCH_OUTLIGHT_PIN)) {
+      lastSwitchState = reading;
+
+      // Cambio detectado (bajada de nivel, si conmutador hace contacto a GND)
+      if (reading == LOW) {
+        // Cambiar el estado de la luz
+        bool currentState = digitalRead(SWITCH_OUTLIGHT_PIN);
+        bool newState = !currentState;
+        digitalWrite(SWITCH_OUTLIGHT_PIN, newState);
+
+        // Notificar por BLE
+        if (deviceConnected) {
+          JsonDocument response;
+          String responseString;
+
+          response["command"]   = newState ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF";
+          response["message"]   = newState ? "Kanpoko argia piztuta (switch)" : "Kanpoko argia itzalita (switch)";
+          response["status"]    = "OK";
+          response["OUT_LIGHT"] = newState;
+
+          serializeJson(response, responseString);
+          pTxCharacteristic->setValue(responseString.c_str());
+          pTxCharacteristic->notify();
+        }
+      }
+    }
+  }
+
+  delay(10); // pequeño delay para evitar sobrecarga
+}
+
 void loop() {
-  delay(1000);
+  read_switch_out_light();
+  delay(500);
 }

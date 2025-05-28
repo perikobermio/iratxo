@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'switch_widget.dart';
+import 'triple_switch_widget.dart';
 import 'horizontal_dinamyc_slide.dart';
 import 'vertical_static_slide.dart';
 import 'info_widget.dart';
@@ -79,10 +80,19 @@ class Home extends StatelessWidget {
                 child: Column(
                   children: [
                     SwitchWidget(
+                      title: 'Kanpoko argije',
                       state: data.v['out_light'],
                       onChanged: (v) async {
                         await ble.command(v ? 'OUT_LIGHT_OFF' : 'OUT_LIGHT_ON');
                         data.v['out_light'].value = v;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TripleSwitchWidget(
+                      title: 'Ure',
+                      state: data.v['water_state'],
+                      onChanged: (v) async {
+                        data.v['water_state'].value = v;
                       },
                     ),
                     const SizedBox(height: 20),
