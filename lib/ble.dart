@@ -1,4 +1,5 @@
 // ini.dart
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'dart:convert';
 import 'dart:async';
@@ -18,6 +19,8 @@ class BleService {
   BluetoothDevice? connectedDevice;
   BluetoothCharacteristic? _rx;
   BluetoothCharacteristic? _tx;
+  final ValueNotifier<bool> isConnected = ValueNotifier<bool>(false);
+
   final Guid serviceUUID  = Guid("8ea03f1f-de1b-4c80-bed8-4e4cc24822e2");
   final Guid rxUUID       = Guid("0e0f8877-e007-4095-ad2e-b85462fc2ae8");
   final Guid txUUID       = Guid("3166f32a-a7ce-4e90-a28d-61907aaed70c");
@@ -35,9 +38,20 @@ class BleService {
           FlutterBluePlus.stopScan();
 
           await device.connect();
-          connectedDevice = device;
+          connectedDevice   = device;
+          isConnected.value = true;
 
           try {
+
+            connectedDevice!.connectionState.listen((BluetoothConnectionState state) {
+              if (state == BluetoothConnectionState.disconnected) {
+                connectedDevice = null;
+                _rx = null;
+                _tx = null;
+                isConnected.value = false;
+                print('************** Bluetooth disconnected ***************');
+              }
+            });
 
             List<BluetoothService> services = await device.discoverServices();
 

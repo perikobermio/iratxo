@@ -6,6 +6,7 @@ import 'triple_switch_widget.dart';
 import 'horizontal_dinamyc_slide.dart';
 import 'vertical_static_slide.dart';
 import 'info_widget.dart';
+import 'reconnect_dialog.dart';
 import 'data.dart';
 import 'ble.dart';
 
@@ -80,6 +81,7 @@ class Home extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
+                    BleStatusWatcher(ble: ble),
                     SwitchWidget(
                       title: 'Kanpoko argije',
                       state: data.v['out_light'],
@@ -128,7 +130,7 @@ class Home extends StatelessWidget {
                       title: 'Vº Gelie',
                       icon: const Icon(Icons.bolt, color: Colors.grey),
                     ),
-                    const SizedBox(height: 40), // Espacio final opcional
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
