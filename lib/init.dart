@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'home.dart';
 import 'ble.dart';
+import 'data.dart';
 
 class Init extends StatefulWidget {
   const Init({super.key});
@@ -12,6 +13,7 @@ class Init extends StatefulWidget {
 
 class _Init extends State<Init> {
   String loadingText = "Iratxo Zentralita";
+  bool errors = false;
 
   @override
   void initState() {
@@ -20,15 +22,30 @@ class _Init extends State<Init> {
   }
 
   Future<void> initializeApp() async {
-    final ble  = BleService();
-
-    await ble.connect();
+    final ble   = BleService();
+    final data  = Data();
 
     setState(() {
       loadingText = "Autokarekin sinkronizatzen...";
     });
-        
-    if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Home()));
+
+    try {
+      await ble.connect();
+
+      setState(() {
+        loadingText = "Datuak eskuratzen...";
+      });
+
+      final response              = await ble.command("READ_VALUES");
+      data.v['out_light'].value   = response['OUT_LIGHT'] == 1 ? false : true;
+          
+      if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Home()));
+    } catch (e) {
+      setState(() {
+        loadingText = e.toString();
+        errors = true;
+      });
+    }
          
   }
 
@@ -52,8 +69,33 @@ class _Init extends State<Init> {
                 loadingText,
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
-              const SizedBox(height: 16),
-              const CircularProgressIndicator(),
+                const SizedBox(height: 16),
+                errors
+                ? ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFB2DFDB),
+                        foregroundColor: Colors.teal[900],
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        errors = false;
+                        loadingText = "Iratxo Zentralita";
+                      });
+                      initializeApp();
+                    },
+                    child: const Text('Berriro saiatu')
+                  )
+                  : const CircularProgressIndicator(),
               ],
             ),
           ),

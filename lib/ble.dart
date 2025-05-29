@@ -26,35 +26,40 @@ class BleService {
   final Guid txUUID       = Guid("3166f32a-a7ce-4e90-a28d-61907aaed70c");
 
   Future<void> connect() async {
+    final completer = Completer<void>();
+    StreamSubscription? scanSubscription;
+
     await disconnect();
-    await FlutterBluePlus.adapterState.where((s) => s == BluetoothAdapterState.on).first; //itxaron bluetooth aktibeta okin arte
+    var state = await FlutterBluePlus.adapterState.first;
+    if (state != BluetoothAdapterState.on) {
+      return Future.error('Bluetootha eta ubikazioa aktibatu.');
+    }
+
     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
 
-    FlutterBluePlus.scanResults.listen((results) async {
+    scanSubscription = FlutterBluePlus.scanResults.listen((results) async {
       for (ScanResult result in results) {
-
         final device = result.device;
-        if (result.device.platformName == targetName) {
-          FlutterBluePlus.stopScan();
 
-          await device.connect();
-          connectedDevice   = device;
-          isConnected.value = true;
+        if (device.platformName == targetName) {
+          FlutterBluePlus.stopScan();
+          await scanSubscription?.cancel();
 
           try {
+            await device.connect();
+            connectedDevice = device;
+            isConnected.value = true;
 
-            connectedDevice!.connectionState.listen((BluetoothConnectionState state) {
+            connectedDevice!.connectionState.listen((state) {
               if (state == BluetoothConnectionState.disconnected) {
                 connectedDevice = null;
                 _rx = null;
                 _tx = null;
                 isConnected.value = false;
-                print('************** Bluetooth disconnected ***************');
               }
             });
 
             List<BluetoothService> services = await device.discoverServices();
-
             for (BluetoothService service in services) {
               if (service.uuid == serviceUUID) {
                 for (var c in service.characteristics) {
@@ -66,17 +71,31 @@ class BleService {
 
             await listenCommand();
 
-            final response              = await command("READ_VALUES");
-            data.v['out_light'].value   = response['OUT_LIGHT'] == 1 ? false : true;
-          
+            if (!completer.isCompleted) {
+              completer.complete(); // <- importante
+            }
+
           } catch (e) {
-              print("Error BLE: $e");
+            if (!completer.isCompleted) {
+              completer.completeError(e);
+            }
           }
+
+          break;
         }
       }
     });
 
+    return completer.future.timeout(
+      const Duration(seconds: 10),
+      onTimeout: () {
+        FlutterBluePlus.stopScan();
+        scanSubscription?.cancel();
+        throw Exception('Tiempo de espera agotado para conectar con el dispositivo BLE.');
+      },
+    );
   }
+
 
   Future<Map<String, dynamic>> command(String cmd) async {
     if (_rx == null) await connect();
