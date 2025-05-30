@@ -9,7 +9,7 @@
 #define CHARACTERISTIC_UUID_TX "3166f32a-a7ce-4e90-a28d-61907aaed70c"
 
 #define OUTLIGHT_PIN 27
-#define SWITCH_OUTLIGHT_PIN 14
+#define SWITCH_OUTLIGHT_PIN 25
 
 bool lastSwitchState = HIGH;
 unsigned long lastDebounceTime = 0;
@@ -102,9 +102,12 @@ void setup() {
 }
 
 void read_switch_out_light() {
-  int reading = digitalRead(SWITCH_OUTLIGHT_PIN);
-
+  Serial.println(digitalRead(SWITCH_OUTLIGHT_PIN));
+  
+  /*int reading = digitalRead(SWITCH_OUTLIGHT_PIN);
+  
   if (reading != lastSwitchState) {
+    Serial.println(reading);
     lastDebounceTime = millis();
   }
 
@@ -117,7 +120,7 @@ void read_switch_out_light() {
         // Cambiar el estado de la luz
         bool currentState = digitalRead(SWITCH_OUTLIGHT_PIN);
         bool newState = !currentState;
-        digitalWrite(SWITCH_OUTLIGHT_PIN, newState);
+        digitalWrite(OUTLIGHT_PIN, newState);
 
         // Notificar por BLE
         if (deviceConnected) {
@@ -135,9 +138,9 @@ void read_switch_out_light() {
         }
       }
     }
-  }
+  }*/
 
-  delay(10); // pequeño delay para evitar sobrecarga
+  delay(500); // pequeño delay para evitar sobrecarga
 }
 
 void loop() {

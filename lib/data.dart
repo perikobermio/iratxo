@@ -13,7 +13,8 @@ class Data {
     'water_state':    ValueNotifier<int>(0),
     'water_clean':    0.0,
     'water_dirt':     0.0,
-    'energy_cabine':  0.0,
-    'energy_room':    0.0,
+    'energy_cabine':  ValueNotifier<double>(13.5),
+    'energy_room':    ValueNotifier<double>(13.4),
+    'room_temp':      ValueNotifier<double>(18.5),
   };
 }

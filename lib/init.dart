@@ -15,6 +15,10 @@ class _Init extends State<Init> {
   String loadingText = "Iratxo Zentralita";
   bool errors = false;
 
+  final ble   = BleService();
+  final data  = Data();
+
+
   @override
   void initState() {
     super.initState();
@@ -22,9 +26,7 @@ class _Init extends State<Init> {
   }
 
   Future<void> initializeApp() async {
-    final ble   = BleService();
-    final data  = Data();
-
+    
     setState(() {
       loadingText = "Autokarekin sinkronizatzen...";
     });
@@ -36,8 +38,9 @@ class _Init extends State<Init> {
         loadingText = "Datuak eskuratzen...";
       });
 
-      final response              = await ble.command("READ_VALUES");
-      data.v['out_light'].value   = response['OUT_LIGHT'] == 1 ? false : true;
+      // Initial fetch
+      final response = await ble.command("READ_VALUES");
+      data.v['out_light'].value = response['OUT_LIGHT'] == 1 ? false : true;
           
       if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Home()));
     } catch (e) {
