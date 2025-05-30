@@ -40,7 +40,7 @@ class _Init extends State<Init> {
 
       // Initial fetch
       final response = await ble.command("READ_VALUES");
-      data.v['out_light'].value = response['OUT_LIGHT'] == 1 ? false : true;
+      data.sync(response);
           
       if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Home()));
     } catch (e) {

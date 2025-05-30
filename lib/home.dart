@@ -30,17 +30,24 @@ class _HomeState extends State<Home> {
   }
 
   void setReadInterval() {
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 100), (timer) async {
       if (!mounted) {
         timer.cancel();
         return;
       }
       try {
         final resp = await ble.command("READ_VALUES");
-        data.v['out_light'].value = resp['OUT_LIGHT'] == 1 ? false : true;
-        data.v['room_temp'].value = 29.9;
+        data.sync(resp);
       } catch (e) {
-        print('Error al leer valores: $e');
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
       }
     });
   }
