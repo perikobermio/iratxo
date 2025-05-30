@@ -1,81 +1,73 @@
 import 'package:flutter/material.dart';
 
-class HorizontalDinamycSlide extends StatefulWidget {
+class HorizontalDinamycSlide extends StatelessWidget {
   final String title;
   final IconData icons;
-  final bool state;
-  final double value;
+  final ValueNotifier<bool> state;
+  final ValueNotifier<double> value;
 
-  const HorizontalDinamycSlide({super.key, 
+  const HorizontalDinamycSlide({
+    super.key,
     required this.title,
     required this.icons,
-    this.state = false,
+    required this.state,
     required this.value,
   });
 
   @override
-  State<HorizontalDinamycSlide> createState() => _HorizontalDinamycSlide();
-}
-
-class _HorizontalDinamycSlide extends State<HorizontalDinamycSlide> {
-  late bool _state;
-  late double _value;
-
-  @override
-  void initState() {
-    super.initState();
-    _state = widget.state;
-    _value = widget.value;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: _state ? Colors.yellow.shade100 : Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Icon(widget.icons, color: _state ? Colors.orange : Colors.grey),
-              const SizedBox(width: 12),
-              const Text('Berogailue', style: TextStyle(fontSize: 18)),
-              const Spacer(),
-              if (_state)
-                Text('${_value.toStringAsFixed(1)} °C',
-                  style: const TextStyle(fontSize: 16)),
-              Switch(
-                value: _state,
-                onChanged: (value) {
-                  setState(() {
-                    _state = value;
-                  });
-                },
+    return ValueListenableBuilder<bool>(
+      valueListenable: state,
+      builder: (context, isOn, _) {
+        return ValueListenableBuilder<double>(
+          valueListenable: value,
+          builder: (context, temp, _) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isOn ? Colors.yellow.shade100 : Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Slider(
-            value: _value,
-            min: 10,
-            max: 40,
-            divisions: 30,
-            label: '${_value.toStringAsFixed(1)} °C',
-            onChanged: _state
-                ? (value) {
-                    setState(() {
-                      _value = value;
-                    });
-                  }
-                : null,
-          ),
-        ],
-      ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Icon(icons, color: isOn ? Colors.orange : Colors.grey),
+                      const SizedBox(width: 12),
+                      Text(title, style: const TextStyle(fontSize: 18)),
+                      const Spacer(),
+                      if (isOn)
+                        Text('${temp.toStringAsFixed(1)} °C',
+                            style: const TextStyle(fontSize: 16)),
+                      Switch(
+                        value: isOn,
+                        onChanged: (val) {
+                          state.value = val;
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Slider(
+                    value: temp,
+                    min: 10,
+                    max: 40,
+                    divisions: 30,
+                    label: '${temp.toStringAsFixed(1)} °C',
+                    onChanged: isOn
+                        ? (val) {
+                            value.value = val;
+                          }
+                        : null,
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
