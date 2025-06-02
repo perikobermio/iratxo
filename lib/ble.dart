@@ -120,7 +120,11 @@ class BleService {
 
         if (_pendingCommand != null && !_pendingCommand!.isCompleted) {
           _pendingCommand!.complete(response);
+        } else {
+          data.sync(response);
+          print(response);
         }
+        
       } catch (e) {
         if (_pendingCommand != null && !_pendingCommand!.isCompleted) {
           _pendingCommand!.completeError(e);

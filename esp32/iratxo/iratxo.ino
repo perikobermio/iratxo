@@ -9,11 +9,10 @@
 #define CHARACTERISTIC_UUID_TX "3166f32a-a7ce-4e90-a28d-61907aaed70c"
 
 #define OUTLIGHT_PIN 27
-#define SWITCH_OUTLIGHT_PIN 25
+#define SWITCH_OUTLIGHT_PIN 5
 
-bool lastSwitchState = HIGH;
-unsigned long lastDebounceTime = 0;
-const unsigned long debounceDelay = 50;
+unsigned long lastOutLightDebounceTime = 0;
+const unsigned long outLightdebounceDelay = 2000;
 
 BLECharacteristic *pTxCharacteristic;
 bool deviceConnected = false;
@@ -102,48 +101,38 @@ void setup() {
 }
 
 void read_switch_out_light() {
-  Serial.println(digitalRead(SWITCH_OUTLIGHT_PIN));
-  
-  /*int reading = digitalRead(SWITCH_OUTLIGHT_PIN);
-  
-  if (reading != lastSwitchState) {
-    Serial.println(reading);
-    lastDebounceTime = millis();
-  }
 
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (reading != digitalRead(SWITCH_OUTLIGHT_PIN)) {
-      lastSwitchState = reading;
+  if (digitalRead(SWITCH_OUTLIGHT_PIN) == LOW) {
+    if ((millis() - lastOutLightDebounceTime) > outLightdebounceDelay) {
+    
+      bool currentState = digitalRead(OUTLIGHT_PIN);
+      bool newState = !currentState;
 
-      // Cambio detectado (bajada de nivel, si conmutador hace contacto a GND)
-      if (reading == LOW) {
-        // Cambiar el estado de la luz
-        bool currentState = digitalRead(SWITCH_OUTLIGHT_PIN);
-        bool newState = !currentState;
-        digitalWrite(OUTLIGHT_PIN, newState);
+      digitalWrite(OUTLIGHT_PIN, newState);
+      lastOutLightDebounceTime = millis();
 
-        // Notificar por BLE
-        if (deviceConnected) {
-          JsonDocument response;
-          String responseString;
+      // Notificar por BLE
+      if (deviceConnected) {
+        JsonDocument response;
+        String responseString;
 
-          response["command"]   = newState ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF";
-          response["message"]   = newState ? "Kanpoko argia piztuta (switch)" : "Kanpoko argia itzalita (switch)";
-          response["status"]    = "OK";
-          response["OUT_LIGHT"] = newState;
+        response["command"]       = newState ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF";
+        response["message"]       = newState ? "Kanpoko argia piztuta (switch)" : "Kanpoko argia itzalita (switch)";
+        response["status"]        = "OK";
+        response["OUT_LIGHT"]     = (int)newState;
 
-          serializeJson(response, responseString);
-          pTxCharacteristic->setValue(responseString.c_str());
-          pTxCharacteristic->notify();
-        }
+        serializeJson(response, responseString);
+        pTxCharacteristic->setValue(responseString.c_str());
+        pTxCharacteristic->notify();
+        Serial.println("out light switch");
       }
     }
-  }*/
+  }
 
-  delay(500); // pequeño delay para evitar sobrecarga
+
 }
 
 void loop() {
   read_switch_out_light();
-  delay(500);
+  delay(100);
 }
