@@ -17,29 +17,41 @@ const unsigned long outLightdebounceDelay = 2000;
 BLECharacteristic *pTxCharacteristic;
 bool deviceConnected = false;
 
+
+
+
 class ServerCallbacks : public BLEServerCallbacks {
+  
   void onConnect(BLEServer* pServer) {
     deviceConnected = true;
-    Serial.println("🔗 Connected");
-    pTxCharacteristic->setValue("Kaixo! IRATXO prest dago ;-)");
-    pTxCharacteristic->notify();
+    Serial.println("🔗BLE Connected");
   }
 
   void onDisconnect(BLEServer* pServer) {
     deviceConnected = false;
     pServer->startAdvertising();
-    Serial.println("❌ Disconnected");
+    Serial.println("BLE Disconnected");
   }
 };
 
+void sendNotify(JsonDocument json) {
+  if (deviceConnected) {
+    String responseString;
+
+    serializeJson(json, responseString);
+    pTxCharacteristic->setValue(responseString.c_str());
+    pTxCharacteristic->notify();
+    Serial.println(responseString.c_str());
+  }
+}
+
 class RXCallbacks : public BLECharacteristicCallbacks {
+  
   void onWrite(BLECharacteristic *pCharacteristic) {
     String command = pCharacteristic->getValue().c_str();
     JsonDocument response;
-    String responseString;
     
     command.trim();
-
     response["command"] = command;
     
     if (command == "OUT_LIGHT_ON") {
@@ -51,32 +63,22 @@ class RXCallbacks : public BLECharacteristicCallbacks {
     } else if (command == "READ_VALUES") {
       response["message"]   = "Datuak ongi irakurrita";
       response["OUT_LIGHT"] = digitalRead(OUTLIGHT_PIN);
-      Serial.println("READING");
-      Serial.println(digitalRead(OUTLIGHT_PIN));
     } else {
-      Serial.println("Command error");
+      response["message"] = "COMMAND error";
     }
 
     response["status"] = "OK";
-    serializeJson(response, responseString);
-
-    if (deviceConnected) {
-      pTxCharacteristic->setValue(responseString.c_str());
-      pTxCharacteristic->notify();
-    }
-    
+    sendNotify(response);
   }
 };
 
-void setup() {
-  Serial.begin(115200);
-  
+void setPins() {
   pinMode(OUTLIGHT_PIN, OUTPUT);
   pinMode(SWITCH_OUTLIGHT_PIN, INPUT_PULLUP);
   digitalWrite(OUTLIGHT_PIN, HIGH);
+}
 
-  ////////////////////////////////////////
-
+void setBLE() {
   BLEDevice::init("IRATXO");
 
   BLEServer *pServer = BLEDevice::createServer();
@@ -96,11 +98,9 @@ void setup() {
   BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->start();
-
-  Serial.println("IRATXO BLE prest dago ;-)");
 }
 
-void read_switch_out_light() {
+void readSwitchOutLight() {
 
   if (digitalRead(SWITCH_OUTLIGHT_PIN) == LOW) {
     if ((millis() - lastOutLightDebounceTime) > outLightdebounceDelay) {
@@ -114,17 +114,13 @@ void read_switch_out_light() {
       // Notificar por BLE
       if (deviceConnected) {
         JsonDocument response;
-        String responseString;
 
         response["command"]       = newState ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF";
         response["message"]       = newState ? "Kanpoko argia piztuta (switch)" : "Kanpoko argia itzalita (switch)";
         response["status"]        = "OK";
         response["OUT_LIGHT"]     = (int)newState;
 
-        serializeJson(response, responseString);
-        pTxCharacteristic->setValue(responseString.c_str());
-        pTxCharacteristic->notify();
-        Serial.println("out light switch");
+        sendNotify(response);
       }
     }
   }
@@ -132,7 +128,17 @@ void read_switch_out_light() {
 
 }
 
+///////////////////////////////////
+
+void setup() {
+  Serial.begin(115200);
+
+  setPins();
+  setBLE();
+
+}
+
 void loop() {
-  read_switch_out_light();
+  readSwitchOutLight();
   delay(100);
 }

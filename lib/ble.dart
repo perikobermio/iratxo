@@ -91,7 +91,7 @@ class BleService {
       onTimeout: () {
         FlutterBluePlus.stopScan();
         scanSubscription?.cancel();
-        throw Exception('Tiempo de espera agotado para conectar con el dispositivo BLE.');
+        throw Exception('Konektatzen TIMEOUT');
       },
     );
   }
