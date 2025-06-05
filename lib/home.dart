@@ -191,18 +191,31 @@ class _HomeState extends State<Home> {
                       icon: Icons.ac_unit,
                       children: [
                         const SizedBox(height: 20),
-                        InfoWidget(
-                          value: data.v['room_temp'],
-                          unit: 'Cº',
-                          title: 'Temperaturie',
-                          icon: const Icon(Icons.device_thermostat, color: Colors.grey),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            InfoWidget(
+                              value: data.v['room_temp'],
+                              unit: 'Cº',
+                              title: 'Barruen',
+                              compact: true,
+                              icon: const Icon(Icons.device_thermostat, color: Colors.grey),
+                            ),
+                            InfoWidget(
+                              value: data.v['out_temp'],
+                              unit: 'Cº',
+                              title: 'Kanpuen',
+                              compact: true,
+                              icon: const Icon(Icons.thermostat, color: Colors.grey),
+                            ),
+                          ]
                         ),
-                        const SizedBox(height: 3),
+                        const SizedBox(height: 20),
                         HorizontalDinamycSlide(
                           state: data.v['hot_state'],
                           value: data.v['hot_temp'],
                           title: 'Berogailua',
-                          icons: Icons.thermostat,
+                          icons: Icons.fireplace,
                         ),
                         const SizedBox(height: 20),
                         TripleSwitchWidget(

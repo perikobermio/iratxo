@@ -17,6 +17,7 @@ class Data {
     'energy_cabine':        ValueNotifier<double>(13.5),
     'energy_room':          ValueNotifier<double>(13.4),
     'room_temp':            ValueNotifier<double>(18.5),
+    'out_temp':             ValueNotifier<double>(15.5),
     'ampere_loading':       ValueNotifier<double>(1.7),
     'ampere_comsum':        ValueNotifier<double>(1.1),
   };
@@ -32,6 +33,7 @@ class Data {
     if (response.containsKey('ENERGY_CABINE'))          v['energy_cabine'].value          = response['ENERGY_CABINE'].toDouble();
     if (response.containsKey('ENERGY_ROOM'))            v['energy_room'].value            = response['ENERGY_ROOM'].toDouble();
     if (response.containsKey('ROOM_TEMP'))              v['room_temp'].value              = response['ROOM_TEMP'].toDouble();
+    if (response.containsKey('OUT_TEMP'))               v['out_temp'].value               = response['OUT_TEMP'].toDouble();
     if (response.containsKey('AMPERE_LOADING'))         v['ampere_loading'].value         = response['AMPERE_LOADING'].toDouble();
     if (response.containsKey('AMPERE_COMSUM'))          v['ampere_loading'].value         = response['AMPERE_COMSUM'].toDouble();
   }
