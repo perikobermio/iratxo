@@ -5,12 +5,14 @@ class ExpandableSection extends StatefulWidget {
   final String title;
   final IconData icon;
   final List<Widget> children;
+  final bool initiallyExpanded;
 
   const ExpandableSection({
     super.key,
     required this.title,
     required this.icon,
     required this.children,
+    this.initiallyExpanded = false,
   });
 
   @override
@@ -18,7 +20,13 @@ class ExpandableSection extends StatefulWidget {
 }
 
 class _ExpandableSectionState extends State<ExpandableSection> {
-  bool _expanded = true;
+  bool _expanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = widget.initiallyExpanded;
+  }
 
   @override
   Widget build(BuildContext context) {

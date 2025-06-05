@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 
-import 'info_header.dart';
 import 'expandables.dart';
 import 'switch_widget.dart';
 import 'triple_switch_widget.dart';
@@ -238,6 +237,7 @@ class _HomeState extends State<Home> {
                     ExpandableSection(
                       title: 'Sistema elektrikue',
                       icon: Icons.ev_station,
+                      initiallyExpanded: true,
                       children: [
                         const SizedBox(height: 20),
                         Row(
