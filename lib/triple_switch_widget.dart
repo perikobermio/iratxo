@@ -21,7 +21,7 @@ class TripleSwitchWidget extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: (value == 1 || value == 2)? Colors.yellow.shade100 : Colors.grey.shade200,
+            color: (value == 2)? Colors.orange.shade100 : value == 1 ? Colors.yellow.shade100 : Colors.grey.shade200,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(

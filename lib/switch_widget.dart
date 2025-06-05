@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class SwitchWidget extends StatelessWidget {
   final ValueNotifier<bool> state;
   final String title;
+  final IconData icon;
   final void Function(bool) onChanged;
 
   const SwitchWidget({
     super.key,
     required this.title,
     required this.state,
+    this.icon = Icons.lightbulb,
     required this.onChanged,
   });
 
@@ -25,7 +27,7 @@ class SwitchWidget extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(Icons.lightbulb, color: value ? Colors.orange : Colors.grey),
+              Icon(icon, color: value ? Colors.orange : Colors.grey),
               const SizedBox(width: 12),
               Text(title, style: const TextStyle(fontSize: 18)),
               const Spacer(),

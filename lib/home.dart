@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 
+import 'info_header.dart';
+import 'expandables.dart';
 import 'switch_widget.dart';
 import 'triple_switch_widget.dart';
 import 'horizontal_dinamyc_slide.dart';
@@ -124,62 +126,147 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: [
                     BleStatusWatcher(ble: ble),
-                    SwitchWidget(
-                      title: 'Kanpoko argije',
-                      state: data.v['out_light'],
-                      onChanged: (v) async {
-                        await ble.command(v ? 'OUT_LIGHT_OFF' : 'OUT_LIGHT_ON');
-                        data.v['out_light'].value = v;
-                      },
-                    ),
+
+
                     const SizedBox(height: 20),
-                    InfoWidget(
-                      value: data.v['room_temp'],
-                      unit: 'Cº',
-                      title: 'Temperaturie',
-                      icon: const Icon(Icons.device_thermostat, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 3),
-                    HorizontalDinamycSlide(
-                      state: data.v['hot_state'],
-                      value: data.v['hot_temp'],
-                      title: 'Berogailua',
-                      icons: Icons.thermostat,
-                    ),
-                    const SizedBox(height: 20),
-                    TripleSwitchWidget(
-                      title: 'Ure',
-                      state: data.v['water_state'],
-                      onChanged: (v) async {
-                        data.v['water_state'].value = v;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    ExpandableSection(
+                      title: 'Argijek',
+                      icon: Icons.power_settings_new,
                       children: [
-                        VerticalStaticSlide(value: data.v['water_clean'], title: 'Ur garbijek'),
-                        VerticalStaticSlide(
-                          value: data.v['water_dirt'],
-                          title: 'Ur Loijek',
-                          inverted: true,
-                          icon: const Icon(Icons.water, color: Color.fromARGB(255, 119, 124, 128)),
+                        const SizedBox(height: 20),
+                        SwitchWidget(
+                          title: 'Kanpoko argije',
+                          state: data.v['out_light'],
+                          onChanged: (v) async {
+                            await ble.command(v ? 'OUT_LIGHT_OFF' : 'OUT_LIGHT_ON');
+                            data.v['out_light'].value = v;
+                          },
                         ),
-                      ],
+                        const SizedBox(height: 20),
+                      ]
+                    ),
+                    const SizedBox(height: 10),
+
+
+
+
+
+                    ExpandableSection(
+                      title: 'Urek',
+                      icon: Icons.water_drop,
+                      children: [
+                        const SizedBox(height: 20),
+                        SwitchWidget(
+                          title: 'Ure',
+                          icon: Icons.water_drop,
+                          state: data.v['water_bomb_state'],
+                          onChanged: (v) async {
+                            data.v['water_bomb_state'].value = v;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            VerticalStaticSlide(value: data.v['water_clean'], title: 'Ur garbijek'),
+                            VerticalStaticSlide(
+                              value: data.v['water_dirt'],
+                              title: 'Ur Loijek',
+                              inverted: true,
+                              icon: const Icon(Icons.water, color: Color.fromARGB(255, 119, 124, 128)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                      ]
+                    ),
+                    const SizedBox(height: 10),
+             
+
+
+
+
+                    ExpandableSection(
+                      title: 'Klimatizazioa',
+                      icon: Icons.ac_unit,
+                      children: [
+                        const SizedBox(height: 20),
+                        InfoWidget(
+                          value: data.v['room_temp'],
+                          unit: 'Cº',
+                          title: 'Temperaturie',
+                          icon: const Icon(Icons.device_thermostat, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 3),
+                        HorizontalDinamycSlide(
+                          state: data.v['hot_state'],
+                          value: data.v['hot_temp'],
+                          title: 'Berogailua',
+                          icons: Icons.thermostat,
+                        ),
+                        const SizedBox(height: 20),
+                        TripleSwitchWidget(
+                          title: 'Ur berue',
+                          state: data.v['water_state'],
+                          onChanged: (v) async {
+                            data.v['water_state'].value = v;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                      ]
+                    ),
+                    const SizedBox(height: 10),
+                
+
+
+
+
+
+                    ExpandableSection(
+                      title: 'Sistema elektrikue',
+                      icon: Icons.ev_station,
+                      children: [
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            InfoWidget(
+                              value: data.v['ampere_loading'],
+                              title: 'Kargaten',
+                              compact: true, unit: 'A+',
+                              icon: const Icon(Icons.electric_meter, color: Colors.blue),
+                            ),
+                            InfoWidget(
+                              value: data.v['ampere_comsum'],
+                              title: 'Gastaten',
+                              compact: true, unit: 'A-',
+                              icon: const Icon(Icons.electric_meter, color: Colors.red),
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            InfoWidget(
+                              value: data.v['energy_cabine'],
+                              title: 'Vº Kabinie',
+                              compact: true,
+                              icon: const Icon(Icons.bolt, color: Colors.grey),
+                            ),
+                            InfoWidget(
+                              value: data.v['energy_room'],
+                              title: 'Vº Gelie',
+                              compact: true,
+                              icon: const Icon(Icons.bolt, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                      ]
                     ),
                     const SizedBox(height: 20),
-                    InfoWidget(
-                      value: data.v['energy_cabine'],
-                      title: 'Vº Kabinie',
-                      icon: const Icon(Icons.bolt, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 3),
-                    InfoWidget(
-                      value: data.v['energy_room'],
-                      title: 'Vº Gelie',
-                      icon: const Icon(Icons.bolt, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 40),
+
                   ],
                 ),
               ),
