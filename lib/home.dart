@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 
 import 'expandables.dart';
+import 'mini_actions.dart';
 import 'switch_widget.dart';
 import 'triple_switch_widget.dart';
 import 'horizontal_dinamyc_slide.dart';
@@ -126,10 +127,10 @@ class _HomeState extends State<Home> {
                   children: [
                     BleStatusWatcher(ble: ble),
 
+                    const MiniActions(),
 
-                    const SizedBox(height: 20),
                     ExpandableSection(
-                      title: 'Argijek',
+                      title: 'Argi eta USB-ak',
                       icon: Icons.power_settings_new,
                       children: [
                         const SizedBox(height: 20),
@@ -137,8 +138,16 @@ class _HomeState extends State<Home> {
                           title: 'Kanpoko argije',
                           state: data.v['out_light'],
                           onChanged: (v) async {
-                            await ble.command(v ? 'OUT_LIGHT_OFF' : 'OUT_LIGHT_ON');
+                            await ble.command(v ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
                             data.v['out_light'].value = v;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        SwitchWidget(
+                          title: 'USB - 1',
+                          state: data.v['usb_1'],
+                          onChanged: (v) async {
+                            data.v['usb_1'].value = v;
                           },
                         ),
                         const SizedBox(height: 20),

@@ -44,10 +44,10 @@ void setWriteCallback(String command) {
   response["command"] = command;
   
   if (command == "OUT_LIGHT_ON") {
-    digitalWrite(OUTLIGHT_PIN, HIGH);
+    digitalWrite(OUTLIGHT_PIN, LOW);
     response["message"] = "Kanpoko argia piztuta";
   } else if (command == "OUT_LIGHT_OFF") {
-    digitalWrite(OUTLIGHT_PIN, LOW);
+    digitalWrite(OUTLIGHT_PIN, HIGH);
     response["message"] = "Kanpoko argia itzalita";
   } else if (command == "READ_VALUES") {
     response["message"]   = "Datuak ongi irakurrita";
