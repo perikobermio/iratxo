@@ -12,6 +12,7 @@ import 'info_widget.dart';
 import 'reconnect_dialog.dart';
 import 'data.dart';
 import 'ble.dart';
+import 'helper.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -21,13 +22,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final data = Data();
-  final ble = BleService();
+  final data    = Data();
+  final ble     = BleService();
+  final helper  = Helper();
   Timer? _timer;
 
   @override
   void initState() {
-    super.initState();  
+    super.initState();
+
+    helper.param['context_home'] = context;  
     setReadInterval();
   }
 
@@ -42,14 +46,7 @@ class _HomeState extends State<Home> {
         data.sync(resp);
       } catch (e) {
         if (!mounted) return;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
-        );
+        helper.snack(e.toString(), 'error');
       }
     });
   }

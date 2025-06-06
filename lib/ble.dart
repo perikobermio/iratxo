@@ -122,7 +122,6 @@ class BleService {
           _pendingCommand!.complete(response);
         } else {
           data.sync(response);
-          print(response);
         }
         
       } catch (e) {

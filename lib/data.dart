@@ -8,11 +8,11 @@ class Data {
 
   Map<String, dynamic> v = {
     'out_light':            ValueNotifier<bool>(false),
-    'hot_state':            ValueNotifier<bool>(false),
-    'water_bomb_state':     ValueNotifier<bool>(false),
     'usb_1':                ValueNotifier<bool>(false),
+    'hot_state':            ValueNotifier<bool>(false),
     'hot_temp':             ValueNotifier<double>(15.0),
     'water_state':          ValueNotifier<int>(0),
+    'water_bomb_state':     ValueNotifier<bool>(false),
     'water_clean':          ValueNotifier<double>(100.0),
     'water_dirt':           ValueNotifier<double>(0.0),
     'energy_cabine':        ValueNotifier<double>(13.5),
