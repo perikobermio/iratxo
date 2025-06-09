@@ -34,6 +34,7 @@ class _MiniActionsState extends State<MiniActions> {
           onPressed: () async {
             await ble.command('OUT_LIGHT_OFF');
             data.v['out_light'].value         = false;
+            data.v['in_light_state'].value    = false;
             data.v['usb_1'].value             = false;
             data.v['water_bomb_state'].value  = false;
             data.v['water_bomb_state'].value  = false;

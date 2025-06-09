@@ -8,6 +8,8 @@ class Data {
 
   Map<String, dynamic> v = {
     'out_light':            ValueNotifier<bool>(false),
+    'in_light_state':       ValueNotifier<bool>(false),
+    'in_light':             ValueNotifier<List<int>>(<int>[12, 12, 12]),
     'usb_1':                ValueNotifier<bool>(false),
     'hot_state':            ValueNotifier<bool>(false),
     'hot_temp':             ValueNotifier<double>(15.0),

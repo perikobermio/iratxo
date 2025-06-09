@@ -7,6 +7,7 @@ import 'mini_actions.dart';
 import 'switch_widget.dart';
 import 'triple_switch_widget.dart';
 import 'horizontal_dinamyc_slide.dart';
+import 'horizontal_dinamyc_slide_color.dart';
 import 'vertical_static_slide.dart';
 import 'info_widget.dart';
 import 'reconnect_dialog.dart';
@@ -138,6 +139,13 @@ class _HomeState extends State<Home> {
                             await ble.command(v ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
                             data.v['out_light'].value = v;
                           },
+                        ),
+                        const SizedBox(height: 20),
+                        HorizontalDinamycSlideColor(
+                          state:    data.v['in_light_state'],
+                          colorRGB: data.v['in_light'],
+                          title:    'Egongelako argije',
+                          icons:    Icons.lightbulb,
                         ),
                         const SizedBox(height: 20),
                         SwitchWidget(
