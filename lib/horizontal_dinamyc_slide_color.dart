@@ -4,7 +4,7 @@ class HorizontalDinamycSlideColor extends StatefulWidget {
   final String title;
   final IconData icons;
   final ValueNotifier<bool> state;
-  final ValueNotifier<List<int>> colorRGB; // [R, G, B]
+  final ValueNotifier<List<int>> colorRGB; // [R, G, B, Brightness]
 
   const HorizontalDinamycSlideColor({
     super.key,
@@ -58,7 +58,12 @@ class _HorizontalDinamycSlideColorState extends State<HorizontalDinamycSlideColo
 
   @override
   Widget build(BuildContext context) {
-    final color = Color.fromARGB(255, rgb[0], rgb[1], rgb[2]);
+    final color = Color.fromARGB(
+      rgb.length > 3 ? rgb[3].clamp(0, 255) : 255, // Brightness as alpha
+      rgb[0],
+      rgb[1],
+      rgb[2],
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -90,6 +95,7 @@ class _HorizontalDinamycSlideColorState extends State<HorizontalDinamycSlideColo
             _buildColorSlider('R', rgb[0], (val) => _setColorChannel(0, val), Colors.red),
             _buildColorSlider('G', rgb[1], (val) => _setColorChannel(1, val), Colors.green),
             _buildColorSlider('B', rgb[2], (val) => _setColorChannel(2, val), Colors.blue),
+            _buildColorSlider('I', rgb.length > 3 ? rgb[3] : 255, (val) => _setColorChannel(3, val), Colors.white),
           ]
         ],
       ),

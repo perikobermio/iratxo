@@ -9,7 +9,7 @@ class Data {
   Map<String, dynamic> v = {
     'out_light':            ValueNotifier<bool>(false),
     'in_light_state':       ValueNotifier<bool>(false),
-    'in_light':             ValueNotifier<List<int>>(<int>[12, 12, 12]),
+    'in_light':             ValueNotifier<List<int>>(<int>[12, 12, 12, 255]),
     'usb_1':                ValueNotifier<bool>(false),
     'hot_state':            ValueNotifier<bool>(false),
     'hot_temp':             ValueNotifier<double>(15.0),
@@ -26,22 +26,10 @@ class Data {
   };
 
   void sync(Map<String, dynamic> response) {
-
-    /*for (var entry in v.entries) {
-      if (entry.value is ValueNotifier && response.containsKey(entry.key.toUpperCase())) {
-
-        if(entry.value is ValueNotifier<bool>) {
-          entry.value.value = response[entry.key.toUpperCase()] == 1 ? true : false;
-        } else if (entry.value is ValueNotifier<double>) {
-          entry.value.value = response[entry.key.toUpperCase()].toDouble();
-        } else if (entry.value is ValueNotifier<int>) {
-          entry.value.value = response[entry.key.toUpperCase()];
-        }
-        
-      }
-    }*/
     
     if (response.containsKey('OUT_LIGHT'))              v['out_light'].value              = response['OUT_LIGHT'] == 1 ? false : true;
+    if (response.containsKey('IN_LIGHT_STATE'))         v['in_light_state'].value         = response['OUT_LIGHT_STATE'] == 1 ? false : true;
+    if (response.containsKey('IN_LIGHT'))               v['in_light'].value               = response['OUT_LIGHT'] is List<int> ? response['IN_LIGHT'] : <int>[12, 12, 12];
     if (response.containsKey('HOT_STATE'))              v['hot_state'].value              = response['HOT_STATE'] == 1 ? true : false;
     if (response.containsKey('WATER_BOMB_STATE'))       v['water_bomb_state'].value       = response['WATER_BOMB_STATE'] == 1 ? true : false;
     if (response.containsKey('USB_1'))                  v['usb_1'].value                  = response['USB_1'] == 1 ? true : false;
