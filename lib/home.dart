@@ -136,7 +136,7 @@ class _HomeState extends State<Home> {
                           title: 'Kanpoko argije',
                           state: data.v['out_light'],
                           onChanged: (v) async {
-                            await ble.command(v ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
+                            await ble.command(v ? 'OUT_LIGHT_OFF' : 'OUT_LIGHT_ON');
                             data.v['out_light'].value = v;
                           },
                         ),
@@ -153,6 +153,15 @@ class _HomeState extends State<Home> {
                           state: data.v['usb_1'],
                           onChanged: (v) async {
                             data.v['usb_1'].value = v;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        SwitchWidget(
+                          title: 'AUDIO',
+                          state: data.v['audio'],
+                          icon: Icons.music_note,
+                          onChanged: (v) async {
+                            data.v['audio'].value = v;
                           },
                         ),
                         const SizedBox(height: 20),

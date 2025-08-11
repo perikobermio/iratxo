@@ -24,6 +24,7 @@ class _MiniActionsState extends State<MiniActions> {
           onPressed: () async {
             data.v['usb_1'].value             = true;
             data.v['water_bomb_state'].value  = true;
+            data.v['audio'].value             = true;
 
             helper.snack('Dana biztute', 'success');
           },
@@ -40,6 +41,7 @@ class _MiniActionsState extends State<MiniActions> {
             data.v['water_bomb_state'].value  = false;
             data.v['water_state'].value       = 0;
             data.v['hot_state'].value         = false;
+            data.v['audio'].value             = false;
 
             helper.snack('Dana amatata', 'success');
           },
