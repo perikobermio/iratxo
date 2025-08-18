@@ -25,14 +25,14 @@ class BleService {
   final Guid rxUUID       = Guid("0e0f8877-e007-4095-ad2e-b85462fc2ae8");
   final Guid txUUID       = Guid("3166f32a-a7ce-4e90-a28d-61907aaed70c");
 
-  Future<void> connect() async {
+  Future<void> connect({bool hard = false}) async {
     final completer = Completer<void>();
     StreamSubscription? scanSubscription;
 
     await disconnect();
     var state = await FlutterBluePlus.adapterState.first;
     if (state != BluetoothAdapterState.on) {
-      return Future.error('Bluetootha eta ubikazioa aktibatu.');
+      return (hard == true)? Future.error('Bluetootha eta ubikazioa aktibatu.') : Future.value();
     }
 
     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
@@ -91,7 +91,7 @@ class BleService {
       onTimeout: () {
         FlutterBluePlus.stopScan();
         scanSubscription?.cancel();
-        throw Exception('Konektatzen TIMEOUT');
+        if(hard == true ) throw Exception('Konektatzen TIMEOUT');
       },
     );
   }

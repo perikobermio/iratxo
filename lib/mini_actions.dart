@@ -26,9 +26,14 @@ class _MiniActionsState extends State<MiniActions> {
             if (ble.isConnected.value) {
               await ble.disconnect();
             } else {
-              await ble.connect();
-              final resp = await ble.command("READ_VALUES");
-              data.sync(resp);
+              try {
+                await ble.connect(hard: true);
+                final resp = await ble.command("READ_VALUES");
+                data.sync(resp);
+              } catch (e) {
+                helper.snack(e.toString(), 'error');
+                return;
+              }
             }
             setState(() {
               helper.snack('Bluetooth-aren egoera aldaketa eginda', 'success');
