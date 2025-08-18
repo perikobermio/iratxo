@@ -18,8 +18,30 @@ class _MiniActionsState extends State<MiniActions> {
   @override
   Widget build(BuildContext context) {
     return Row(
+      
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        IconButton(
+          onPressed: () async {
+            if (ble.isConnected.value) {
+              await ble.disconnect();
+            } else {
+              await ble.connect();
+              final resp = await ble.command("READ_VALUES");
+              data.sync(resp);
+            }
+            setState(() {
+              helper.snack('Bluetooth-aren egoera aldaketa eginda', 'success');
+            });
+          },
+          icon: Icon(
+            ble.isConnected.value ? Icons.bluetooth : Icons.bluetooth_disabled,
+            size: 30,
+            color: ble.isConnected.value ? Colors.blue : Colors.grey,
+          ),
+          tooltip: 'Bluetooth',
+        ),
+        const Spacer(),
         IconButton(
           onPressed: () async {
             data.v['usb_1'].value             = true;

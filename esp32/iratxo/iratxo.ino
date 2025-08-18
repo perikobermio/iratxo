@@ -75,5 +75,5 @@ void setup() {
 
 void loop() {
   readSwitchOutLight();
-  delay(3000);
+  delay(100);
 }

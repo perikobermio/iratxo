@@ -10,7 +10,7 @@ import 'horizontal_dinamyc_slide.dart';
 import 'horizontal_dinamyc_slide_color.dart';
 import 'vertical_static_slide.dart';
 import 'info_widget.dart';
-import 'reconnect_dialog.dart';
+//import 'reconnect_dialog.dart';
 import 'data.dart';
 import 'ble.dart';
 import 'helper.dart';
@@ -43,8 +43,10 @@ class _HomeState extends State<Home> {
         return;
       }
       try {
-        final resp = await ble.command("READ_VALUES");
-        data.sync(resp);
+        if (ble.isConnected.value) {
+          final resp = await ble.command("READ_VALUES");
+          data.sync(resp);
+        }
       } catch (e) {
         if (!mounted) return;
         helper.snack(e.toString(), 'error');
@@ -123,7 +125,7 @@ class _HomeState extends State<Home> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    BleStatusWatcher(ble: ble),
+                    //BleStatusWatcher(ble: ble),
 
                     const MiniActions(),
 
@@ -136,7 +138,7 @@ class _HomeState extends State<Home> {
                           title: 'Kanpoko argije',
                           state: data.v['out_light'],
                           onChanged: (v) async {
-                            await ble.command(v ? 'OUT_LIGHT_OFF' : 'OUT_LIGHT_ON');
+                            await ble.command(v ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
                             data.v['out_light'].value = v;
                           },
                         ),

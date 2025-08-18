@@ -98,7 +98,9 @@ class BleService {
 
 
   Future<Map<String, dynamic>> command(String cmd) async {
-    if (_rx == null) await connect();
+    if (_rx == null) {
+      return Future.value({'success': false});
+    }
 
     _pendingCommand = Completer<Map<String, dynamic>>();
 
