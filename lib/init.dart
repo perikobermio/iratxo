@@ -47,7 +47,7 @@ class _Init extends State<Init> {
     } catch (e) {
       setState(() {
         loadingText = e.toString();
-        errors = true;
+        //errors = true;
       });
     }
          

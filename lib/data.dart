@@ -28,7 +28,7 @@ class Data {
 
   void sync(Map<String, dynamic> response) {
     
-    if (response.containsKey('OUT_LIGHT'))              v['out_light'].value              = response['OUT_LIGHT'] == 1 ? false : true;
+    if (response.containsKey('OUT_LIGHT'))              v['out_light'].value              = response['OUT_LIGHT'] == 1 ? true : false;
     if (response.containsKey('IN_LIGHT_STATE'))         v['in_light_state'].value         = response['OUT_LIGHT_STATE'] == 1 ? false : true;
     if (response.containsKey('IN_LIGHT'))               v['in_light'].value               = response['OUT_LIGHT'] is List<int> ? response['IN_LIGHT'] : <int>[12, 12, 12];
     if (response.containsKey('HOT_STATE'))              v['hot_state'].value              = response['HOT_STATE'] == 1 ? true : false;
