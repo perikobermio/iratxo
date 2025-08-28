@@ -38,10 +38,10 @@ class _Init extends State<Init> {
         loadingText = "Datuak eskuratzen...";
       });
 
-      if (ble.isConnected.value) {
-        final response = await ble.command("READ_VALUES");
-        data.sync(response);
-      }
+      
+      final response = await ble.command("READ_VALUES");
+      data.sync(response);
+      
           
       if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Home()));
     } catch (e) {

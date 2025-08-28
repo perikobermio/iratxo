@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'data.dart';
+import 'request.dart';
 
 class BleService {
 
@@ -13,7 +14,8 @@ class BleService {
   factory BleService() => _instance;
   Completer<Map<String, dynamic>>? _pendingCommand;
 
-  final data = Data();
+  final data      = Data();
+  final request   = RequestService();
 
   final String targetName = "IRATXO";
   BluetoothDevice? connectedDevice;
@@ -98,8 +100,8 @@ class BleService {
 
 
   Future<Map<String, dynamic>> command(String cmd) async {
-    if (_rx == null) {
-      return Future.value({'success': false});
+    if (_rx == null) {     
+      return request.command(cmd); 
     }
 
     _pendingCommand = Completer<Map<String, dynamic>>();

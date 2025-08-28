@@ -138,8 +138,8 @@ class _HomeState extends State<Home> {
                           title: 'Kanpoko argije',
                           state: data.v['out_light'],
                           onChanged: (v) async {
-                            await ble.command(v ? 'OUT_LIGHT_OFF' : 'OUT_LIGHT_ON');
                             data.v['out_light'].value = v;
+                            await ble.command(v ? 'OUT_LIGHT_ON' : 'OUT_LIGHT_OFF');
                           },
                         ),
                         const SizedBox(height: 20),
