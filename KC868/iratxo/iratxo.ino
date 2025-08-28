@@ -25,7 +25,7 @@ void readSwitchOutLight() {
       digitalWrite(OUTLIGHT_PIN, newState);
       lastOutLightDebounceTime = millis();
 
-      StaticJsonDocument<256> response;
+      JsonDocument response;
 
       response["command"]   = newState ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF";
       response["message"]   = newState ? "Kanpoko argia piztuta (switch)" : "Kanpoko argia itzalita (switch)";
@@ -38,7 +38,7 @@ void readSwitchOutLight() {
 }
 
 void setWriteCallback(String command) {
-  StaticJsonDocument<256> response;
+  JsonDocument response;
 
   command.trim();
   response["command"] = command;
@@ -65,7 +65,6 @@ void setup() {
 
   setPins();
 
-  // Conversión std::string → String explícita
   ble.setWriteCallback([](std::string value) {
     setWriteCallback(String(value.c_str()));
   });

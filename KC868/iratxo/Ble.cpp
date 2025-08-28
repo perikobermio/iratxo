@@ -34,7 +34,7 @@ Ble::RXCallbacks::RXCallbacks(std::function<void(std::string)> cb) : callback(cb
 
 void Ble::RXCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
   if (callback) {
-    std::string value = pCharacteristic->getValue();
+    std::string value = pCharacteristic->getValue().c_str();
     callback(value);
   }
 }
