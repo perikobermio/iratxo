@@ -1,18 +1,24 @@
 #include <ArduinoJson.h>
 #include "Ble.h"
+#include "Sim.h"
 
 #define OUTLIGHT_PIN 2
 #define SWITCH_OUTLIGHT_PIN 39
 
-unsigned long lastOutLightDebounceTime = 0;
+unsigned long lastOutLightDebounceTime    = 0;
 const unsigned long outLightdebounceDelay = 2000;
 
 Ble ble;
+Sim sim;
 
 void setPins() {
   pinMode(OUTLIGHT_PIN, OUTPUT);
   pinMode(SWITCH_OUTLIGHT_PIN, INPUT);
   digitalWrite(OUTLIGHT_PIN, LOW);
+}
+
+void setNAS(long lu = -1) {
+  //last_update = (lu == -1 ? last_update : lu) + millis() / 1000;
 }
 
 void readSwitchOutLight() {
@@ -33,6 +39,7 @@ void readSwitchOutLight() {
       response["OUT_LIGHT"] = (int)newState;
 
       ble.sendNotify(response);
+      setNAS();
     }
   }
 }
@@ -45,13 +52,22 @@ void setWriteCallback(String command) {
 
   if (command == "OUT_LIGHT_ON") {
     digitalWrite(OUTLIGHT_PIN, HIGH);
-    response["message"] = "Kanpoko argia piztuta";
+    response["message"]     = "Kanpoko argia piztuta";
+
   } else if (command == "OUT_LIGHT_OFF") {
     digitalWrite(OUTLIGHT_PIN, LOW);
-    response["message"] = "Kanpoko argia itzalita";
+    response["message"]     = "Kanpoko argia itzalita";
+
   } else if (command == "READ_VALUES") {
-    response["message"]   = "Datuak ongi irakurrita";
-    response["OUT_LIGHT"] = digitalRead(OUTLIGHT_PIN);
+    response["message"]     = "Datuak ongi irakurrita";
+    response["OUT_LIGHT"]   = digitalRead(OUTLIGHT_PIN);
+    //response["SYNC_TOGGLE"] = sim_connected;
+
+  } else if (command == "SYNC_TOGGLE") {
+    response["message"]     = "Sinkronizazioa aldatu";
+    //response["SYNC_TOGGLE"] = sim_connected;
+    //readNAS();
+
   } else {
     response["message"] = "COMMAND error";
   }
@@ -62,17 +78,33 @@ void setWriteCallback(String command) {
 
 void setup() {
   Serial.begin(115200);
+  //last_update = millis();
 
   setPins();
 
-  ble.setWriteCallback([](std::string value) {
-    setWriteCallback(String(value.c_str()));
+  ble.setWriteCallback([](String value) {
+    setWriteCallback(value);
+  });
+
+  sim.setWriteCallback([](String value) {
+    setWriteCallback(value);
   });
 
   ble.connect();
+  sim.connect();
+
+  if(sim.connected) {
+    sim.read();
+  }
 }
 
 void loop() {
   readSwitchOutLight();
+
+  /*if (sim_connected && (millis() - lastSimRefresh >= sim_refresh_time * 1000)) {
+    readNAS();
+    lastSimRefresh = millis();
+  }*/
+
   delay(10);
 }

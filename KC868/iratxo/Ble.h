@@ -12,7 +12,8 @@ class Ble {
   public:
     Ble();
     void connect();
-    void setWriteCallback(std::function<void(std::string)> cb);
+    bool isConnected();
+    void setWriteCallback(std::function<void(String)> cb);
     void sendNotify(const ArduinoJson::JsonDocument& response);
 
   private:
@@ -26,16 +27,16 @@ class Ble {
 
     class RXCallbacks : public BLECharacteristicCallbacks {
       public:
-        RXCallbacks(std::function<void(std::string)> cb);
+        RXCallbacks(std::function<void(String)> cb);
       protected:
         void onWrite(BLECharacteristic *pCharacteristic) override;
       private:
-        std::function<void(std::string)> callback;
+        std::function<void(String)> callback;
     };
 
     ServerCallbacks* createServerCallbacks();
     RXCallbacks* createRXCallbacks();
-    std::function<void(std::string)> writeCallback;
+    std::function<void(String)> writeCallback;
 };
 
 #endif

@@ -20,7 +20,7 @@ Ble::Ble() {
 // ServerCallbacks methods
 void Ble::ServerCallbacks::onConnect(BLEServer* pServer) {
   deviceConnected = true;
-  Serial.println("🔗 BLE Connected");
+  Serial.println("BLE Connected");
 }
 
 void Ble::ServerCallbacks::onDisconnect(BLEServer* pServer) {
@@ -30,12 +30,12 @@ void Ble::ServerCallbacks::onDisconnect(BLEServer* pServer) {
 }
 
 // RXCallbacks constructor and methods
-Ble::RXCallbacks::RXCallbacks(std::function<void(std::string)> cb) : callback(cb) {}
+Ble::RXCallbacks::RXCallbacks(std::function<void(String)> cb) : callback(cb) {}
 
 void Ble::RXCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
   if (callback) {
-    std::string value = pCharacteristic->getValue().c_str();
-    callback(value);
+    String value = pCharacteristic->getValue().c_str();
+    if(callback) callback(value);
   }
 }
 
@@ -48,7 +48,7 @@ Ble::RXCallbacks* Ble::createRXCallbacks() {
   return new RXCallbacks(writeCallback);
 }
 
-void Ble::setWriteCallback(std::function<void(std::string)> cb) {
+void Ble::setWriteCallback(std::function<void(String)> cb) {
   writeCallback = cb;
 }
 
@@ -87,4 +87,8 @@ void Ble::sendNotify(const ArduinoJson::JsonDocument& json) {
     pTxCharacteristic->setValue(responseString.c_str());
     pTxCharacteristic->notify();
   }
+}
+
+bool Ble::isConnected() {
+  return deviceConnected;
 }
