@@ -50,20 +50,12 @@ void Sim::read() {
     DeserializationError error = deserializeJson(data, http.responseBody());
 
     if (!error) {
-      /*if(data["last_update"] > last_update) {
-        String command = "";
+      String command = "";
 
-        if(data["data"]["OUT_LIGHT"] == 1)       command = "OUT_LIGHT_ON";
-        else if(data["data"]["OUT_LIGHT"] == 0)  command = "OUT_LIGHT_OFF";
+      if(data["data"]["OUT_LIGHT"] == 1)       command = "OUT_LIGHT_ON";
+      else if(data["data"]["OUT_LIGHT"] == 0)  command = "OUT_LIGHT_OFF";
 
-        setWriteCallback(command);
-      }*/
-
-      if (writeCallback) {
-        writeCallback("OUT_LIGHT_ON");
-      }
-
-      Serial.println(data.as<String>());
+      if(writeCallback) writeCallback(command);
     } else {
       Serial.print("SIM error: "); Serial.println(error.c_str());
     }

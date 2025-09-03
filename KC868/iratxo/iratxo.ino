@@ -17,29 +17,11 @@ void setPins() {
   digitalWrite(OUTLIGHT_PIN, LOW);
 }
 
-void setNAS(long lu = -1) {
-  //last_update = (lu == -1 ? last_update : lu) + millis() / 1000;
-}
-
 void readSwitchOutLight() {
   if (digitalRead(SWITCH_OUTLIGHT_PIN) == LOW) {
     if ((millis() - lastOutLightDebounceTime) > outLightdebounceDelay) {
-
-      bool currentState = digitalRead(OUTLIGHT_PIN);
-      bool newState = !currentState;
-
-      digitalWrite(OUTLIGHT_PIN, newState);
       lastOutLightDebounceTime = millis();
-
-      JsonDocument response;
-
-      response["command"]   = newState ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF";
-      response["message"]   = newState ? "Kanpoko argia piztuta (switch)" : "Kanpoko argia itzalita (switch)";
-      response["status"]    = "OK";
-      response["OUT_LIGHT"] = (int)newState;
-
-      ble.sendNotify(response);
-      setNAS();
+      setWriteCallback(!digitalRead(OUTLIGHT_PIN) ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF");
     }
   }
 }
@@ -53,23 +35,22 @@ void setWriteCallback(String command) {
   if (command == "OUT_LIGHT_ON") {
     digitalWrite(OUTLIGHT_PIN, HIGH);
     response["message"]     = "Kanpoko argia piztuta";
+    response["OUT_LIGHT"]   = 1;
 
   } else if (command == "OUT_LIGHT_OFF") {
     digitalWrite(OUTLIGHT_PIN, LOW);
     response["message"]     = "Kanpoko argia itzalita";
+    response["OUT_LIGHT"]   = 0;
 
   } else if (command == "READ_VALUES") {
     response["message"]     = "Datuak ongi irakurrita";
     response["OUT_LIGHT"]   = digitalRead(OUTLIGHT_PIN);
-    //response["SYNC_TOGGLE"] = sim_connected;
 
   } else if (command == "SYNC_TOGGLE") {
     response["message"]     = "Sinkronizazioa aldatu";
-    //response["SYNC_TOGGLE"] = sim_connected;
-    //readNAS();
 
   } else {
-    response["message"] = "COMMAND error";
+    response["message"]     = "COMMAND error";
   }
 
   response["status"] = "OK";
@@ -78,7 +59,6 @@ void setWriteCallback(String command) {
 
 void setup() {
   Serial.begin(115200);
-  //last_update = millis();
 
   setPins();
 
@@ -91,20 +71,15 @@ void setup() {
   });
 
   ble.connect();
-  sim.connect();
+  //sim.connect();
 
   if(sim.connected) {
-    sim.read();
+    //sim.read();
   }
 }
 
 void loop() {
   readSwitchOutLight();
-
-  /*if (sim_connected && (millis() - lastSimRefresh >= sim_refresh_time * 1000)) {
-    readNAS();
-    lastSimRefresh = millis();
-  }*/
 
   delay(10);
 }
