@@ -1,6 +1,5 @@
 #include "Sim.h"
 #include <ArduinoJson.h>
-
 #include <ArduinoHttpClient.h>
 
 #define TINY_GSM_MODEM_SIM800
@@ -17,8 +16,8 @@ int rx_pin = 13;
 int tx_pin = 5;
 String api = "/api/iratxo/data";
 
-bool connected = false;
-JsonDocument data;
+bool                  connected = false;
+JsonDocument          data;
 
 // Constructor
 Sim::Sim() {
@@ -41,7 +40,7 @@ void Sim::connect() {
   }
 }
 
-void Sim::read() {
+void Sim::read(unsigned long last_update ) {
   if(!connected) Sim::connect();
 
   http.get(api);
@@ -49,18 +48,18 @@ void Sim::read() {
   if(http.responseStatusCode() == 200) {
     DeserializationError error = deserializeJson(data, http.responseBody());
 
-    if (!error) {
-      String command = "";
+    if (!error && data["last_update"] > last_update) {
+      std::vector<String> commands;
 
-      if(data["data"]["OUT_LIGHT"] == 1)       command = "OUT_LIGHT_ON";
-      else if(data["data"]["OUT_LIGHT"] == 0)  command = "OUT_LIGHT_OFF";
+      if(data["data"]["OUT_LIGHT"] == 1)       commands.push_back("OUT_LIGHT_ON");
+      else if(data["data"]["OUT_LIGHT"] == 0)  commands.push_back("OUT_LIGHT_OFF");
 
-      if(writeCallback) writeCallback(command);
-    } else {
-      Serial.print("SIM error: "); Serial.println(error.c_str());
+      for(const auto& command : commands) {
+        if(writeCallback) writeCallback(command);
+      }
     }
 
-    Serial.println("SIM read OK");
+    Serial.println("SIM read Finished");
   } else {
     Serial.print("SIM READ error: "); Serial.println(http.responseStatusCode());
   }

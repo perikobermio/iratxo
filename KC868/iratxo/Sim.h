@@ -10,9 +10,10 @@ class Sim {
   public:
     Sim();
     void connect();
-    void read();
+    void read(unsigned long last_update);
     bool connected;
     JsonDocument data;
+    unsigned long last_update;
 
     void setWriteCallback(std::function<void(String)> cb);
 
