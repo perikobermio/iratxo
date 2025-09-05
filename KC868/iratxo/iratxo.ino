@@ -8,7 +8,7 @@
 unsigned long         lastOutLightDebounceTime  = 0;
 const unsigned long   outLightdebounceDelay     = 2000;
 unsigned long         last_update               = 0;
-int                   refresh                   = 5;
+int                   refresh                   = 1;
 static unsigned long  lastRead                  = 0;
 
 Ble ble;
@@ -28,8 +28,9 @@ void readSwitchOutLight() {
 }
 
 void updateLastUpdate() {
-  Serial.println("Updating last_update");
-  last_update = 2756472260;
+  if(last_update == 0)  last_update = sim.now();
+  else                  last_update = last_update + millis() / 1000; //49 egun maximo MILLIS OVERLOAD
+  Serial.print("Updating last_update: "); Serial.println(last_update);
 }
 
 void setWriteCallback(String command) {
@@ -55,7 +56,7 @@ void setWriteCallback(String command) {
 
   } else if (command == "SYNC_TOGGLE") {
     response["message"]     = "Sinkronizazioa aldatu";
-    
+
   } else {
     response["message"]     = "COMMAND error";
   }
@@ -69,7 +70,6 @@ void setup() {
   Serial.begin(115200);
 
   setPins();
-  updateLastUpdate();
 
   ble.setWriteCallback([](String value) {
     setWriteCallback(value);
@@ -81,13 +81,15 @@ void setup() {
 
   ble.connect();
   sim.connect();
+
+  updateLastUpdate();
 }
 
 void loop() {
   readSwitchOutLight();
 
   if(millis() - lastRead >= refresh * 60000) {
-    sim.read(lastRead);
+    sim.read(last_update);
     lastRead = millis();
   }
 

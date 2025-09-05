@@ -10,6 +10,7 @@ class Sim {
   public:
     Sim();
     void connect();
+    unsigned long now();
     void read(unsigned long last_update);
     bool connected;
     JsonDocument data;

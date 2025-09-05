@@ -1,4 +1,5 @@
 #include "Sim.h"
+#include <WiFi.h>
 #include <ArduinoJson.h>
 #include <ArduinoHttpClient.h>
 
@@ -10,16 +11,22 @@
 HardwareSerial SerialAT(1);
 TinyGsm modem(SerialAT);
 TinyGsmClient client(modem);
-HttpClient http(client, "api.ebu.freemyip.com", 80);
+WiFiClient wifi;
 
-int rx_pin = 13;
-int tx_pin = 5;
-String api = "/api/iratxo/data";
+int wifi_timeout      = 5;
+const char* ssid      = "Jesukristo";
+const char* password  = "Bermio1982";
+
+int rx_pin            = 13;
+int tx_pin            = 5;
+
+String host           = "api.ebu.freemyip.com";
+String api            = "/api/iratxo/data";
+String cts            = "/api/iratxo/cts";
 
 bool                  connected = false;
 JsonDocument          data;
 
-// Constructor
 Sim::Sim() {
     Serial.println("SIM instance created");
 }
@@ -29,19 +36,32 @@ void Sim::setWriteCallback(std::function<void(String)> cb) {
 }
 
 void Sim::connect() {
-  SerialAT.begin(9600, SERIAL_8N1, rx_pin, tx_pin);
-  modem.restart();
 
-  if (modem.gprsConnect("simbase", "", "")) {
-    Serial.print("GPRS Connected: "); Serial.print(" CSQ: "); Serial.println(modem.getSignalQuality());
+  WiFi.begin(ssid, password);
+  unsigned long start = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - start < wifi_timeout * 1000) delay(500);
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("WIFI Connected: "); Serial.print(" dBm: "); Serial.println(WiFi.RSSI());
     connected = true;
   } else {
-    Serial.println("ERROR: GPRS connection failed!");
+    SerialAT.begin(9600, SERIAL_8N1, rx_pin, tx_pin);
+    modem.restart();
+
+    if (modem.gprsConnect("simbase", "", "")) {
+      Serial.print("GPRS Connected: "); Serial.print(" CSQ: "); Serial.println(modem.getSignalQuality());
+      connected = true;
+    } else {
+      Serial.println("ERROR: GPRS connection failed!");
+    }
   }
+
 }
 
 void Sim::read(unsigned long last_update ) {
   if(!connected) Sim::connect();
+
+  HttpClient http((WiFi.status() == WL_CONNECTED) ? static_cast<Client&>(wifi) : static_cast<Client&>(client), host, 80);
 
   http.get(api);
 
@@ -63,4 +83,19 @@ void Sim::read(unsigned long last_update ) {
   } else {
     Serial.print("SIM READ error: "); Serial.println(http.responseStatusCode());
   }
+}
+
+unsigned long Sim::now() {
+  if(!connected) return static_cast<unsigned long>(0);
+
+  HttpClient http((WiFi.status() == WL_CONNECTED) ? static_cast<Client&>(wifi) : static_cast<Client&>(client), host, 80);
+  http.get(cts);
+
+  if(http.responseStatusCode() == 200) {
+    DeserializationError error = deserializeJson(data, http.responseBody());
+    return static_cast<unsigned long>(data["timestamp"].as<unsigned long>());
+  }
+
+  Serial.print("SIM NOW() error: "); Serial.println(http.responseStatusCode());
+  return static_cast<unsigned long>(0);
 }
