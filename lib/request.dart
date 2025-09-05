@@ -33,7 +33,10 @@ class RequestService {
         final response = await http.post(
           Uri.parse(apiData),
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode({'data': jsonReady}),
+          body: jsonEncode({
+            'last_update': DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            'data': jsonReady
+          }),
         );
 
         if (response.statusCode == 200) {

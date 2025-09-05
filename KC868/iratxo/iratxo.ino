@@ -8,7 +8,7 @@
 unsigned long         lastOutLightDebounceTime  = 0;
 const unsigned long   outLightdebounceDelay     = 2000;
 unsigned long         last_update               = 0;
-int                   refresh                   = 1;
+int                   refresh                   = 5;
 static unsigned long  lastRead                  = 0;
 
 Ble ble;
@@ -29,7 +29,7 @@ void readSwitchOutLight() {
 
 void updateLastUpdate() {
   if(last_update == 0)  last_update = sim.now();
-  else                  last_update = last_update + millis() / 1000; //49 egun maximo MILLIS OVERLOAD
+  else                  last_update = sim.now();
   Serial.print("Updating last_update: "); Serial.println(last_update);
 }
 
