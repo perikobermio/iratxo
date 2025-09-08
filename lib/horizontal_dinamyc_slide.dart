@@ -5,6 +5,7 @@ class HorizontalDinamycSlide extends StatelessWidget {
   final IconData icons;
   final ValueNotifier<bool> state;
   final ValueNotifier<double> value;
+  final void Function(Map<String, dynamic>) onChanged;
 
   const HorizontalDinamycSlide({
     super.key,
@@ -12,6 +13,7 @@ class HorizontalDinamycSlide extends StatelessWidget {
     required this.icons,
     required this.state,
     required this.value,
+    required this.onChanged,
   });
 
   @override
@@ -45,6 +47,7 @@ class HorizontalDinamycSlide extends StatelessWidget {
                         value: isOn,
                         onChanged: (val) {
                           state.value = val;
+                          onChanged({'state': state.value, 'value': value.value});
                         },
                       ),
                     ],
@@ -59,6 +62,7 @@ class HorizontalDinamycSlide extends StatelessWidget {
                     onChanged: isOn
                         ? (val) {
                             value.value = val;
+                            onChanged({'state': state.value, 'value': value.value});
                           }
                         : null,
                   ),

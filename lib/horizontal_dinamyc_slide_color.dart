@@ -5,6 +5,7 @@ class HorizontalDinamycSlideColor extends StatefulWidget {
   final IconData icons;
   final ValueNotifier<bool> state;
   final ValueNotifier<List<int>> colorRGB; // [R, G, B, Brightness]
+  final void Function(Map<String, dynamic>) onChanged;
 
   const HorizontalDinamycSlideColor({
     super.key,
@@ -12,6 +13,7 @@ class HorizontalDinamycSlideColor extends StatefulWidget {
     required this.icons,
     required this.state,
     required this.colorRGB,
+    required this.onChanged,
   });
 
   @override
@@ -54,6 +56,7 @@ class _HorizontalDinamycSlideColorState extends State<HorizontalDinamycSlideColo
   void _setColorChannel(int index, int value) {
     rgb[index] = value.clamp(0, 255);
     widget.colorRGB.value = List.from(rgb);
+    widget.onChanged({'state': isOn, 'rgb': List.from(rgb)});
   }
 
   @override
@@ -86,6 +89,7 @@ class _HorizontalDinamycSlideColorState extends State<HorizontalDinamycSlideColo
                 activeColor: color,
                 onChanged: (val) {
                   widget.state.value = val;
+                  widget.onChanged({'state': val, 'rgb': List.from(rgb)});
                 },
               ),
             ],

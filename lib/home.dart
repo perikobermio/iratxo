@@ -148,6 +148,11 @@ class _HomeState extends State<Home> {
                           colorRGB: data.v['in_light'],
                           title:    'Egongelako argije',
                           icons:    Icons.lightbulb,
+                          onChanged: (v) async {
+                            data.v['in_light_state'].value  = v['state'];
+                            data.v['in_light'].value        = List<int>.from(v['rgb']);
+                            await ble.command(v['state'] ? 'IN_LIGHT_ON' : 'IN_LIGHT_OFF');
+                          },
                         ),
                         const SizedBox(height: 20),
                         SwitchWidget(
@@ -155,6 +160,7 @@ class _HomeState extends State<Home> {
                           state: data.v['usb_1'],
                           onChanged: (v) async {
                             data.v['usb_1'].value = v;
+                            await ble.command(v ? 'USB_1_ON' : 'USB_1_OFF');
                           },
                         ),
                         const SizedBox(height: 20),
@@ -164,6 +170,7 @@ class _HomeState extends State<Home> {
                           icon: Icons.music_note,
                           onChanged: (v) async {
                             data.v['audio'].value = v;
+                            await ble.command(v ? 'AUDIO_ON' : 'AUDIO_OFF');
                           },
                         ),
                         const SizedBox(height: 20),
@@ -186,6 +193,7 @@ class _HomeState extends State<Home> {
                           state: data.v['water_bomb_state'],
                           onChanged: (v) async {
                             data.v['water_bomb_state'].value = v;
+                            await ble.command(v ? 'WATER_BOMB_ON' : 'WATER_BOMB_OFF');
                           },
                         ),
                         const SizedBox(height: 20),
@@ -240,6 +248,11 @@ class _HomeState extends State<Home> {
                           value: data.v['hot_temp'],
                           title: 'Berogailua',
                           icons: Icons.fireplace,
+                          onChanged: (v) async {
+                            data.v['hot_state'].value  = v['state'];
+                            data.v['hot_temp'].value   = v['value'];
+                            await ble.command(v['state'] ? 'HOT_ON' : 'HOT_OFF');
+                          },
                         ),
                         const SizedBox(height: 20),
                         TripleSwitchWidget(
@@ -247,6 +260,7 @@ class _HomeState extends State<Home> {
                           state: data.v['water_state'],
                           onChanged: (v) async {
                             data.v['water_state'].value = v;
+                            await ble.command('WATER_STATE_CHANGE');
                           },
                         ),
                         const SizedBox(height: 20),

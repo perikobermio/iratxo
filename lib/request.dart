@@ -1,6 +1,7 @@
 // ini.dart
 import 'dart:convert';
 import 'dart:async';
+import 'dart:math';
 import 'package:http/http.dart' as http;
 
 import 'data.dart';
@@ -20,11 +21,23 @@ class RequestService {
         final response = await http.get(Uri.parse(apiData));
 
         if (response.statusCode == 200) {
+          print(json.decode(response.body)['data'] as Map<String, dynamic>);
           return json.decode(response.body)['data'] as Map<String, dynamic>;
         }
 
+      case "USB_1_ON":
+      case "USB_1_OFF":
+      case "WATER_BOMB_ON":
+      case "WATER_BOMB_OFF":
+      case "AUDIO_ON":
+      case "AUDIO_OFF":
+      case "HOT_ON":
+      case "HOT_OFF":
+      case "IN_LIGHT_ON":
+      case "IN_LIGHT_OFF":
       case "OUT_LIGHT_ON":
       case "OUT_LIGHT_OFF":
+      case "WATER_STATE_CHANGE":
       
         Map<String, dynamic> jsonReady = {
           for (var entry in data.v.entries) entry.key.toUpperCase(): entry.value.value == true? 1 : entry.value.value == false ? 0 : entry.value.value
