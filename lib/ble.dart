@@ -1,6 +1,7 @@
 // ini.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:convert';
 import 'dart:async';
 
@@ -32,8 +33,12 @@ class BleService {
     StreamSubscription? scanSubscription;
 
     await disconnect();
-    var state = await FlutterBluePlus.adapterState.first;
-    if (state != BluetoothAdapterState.on) {
+    var state     = await FlutterBluePlus.adapterState.first;
+    var location  = await Permission.locationWhenInUse.serviceStatus;
+    
+    if (state != BluetoothAdapterState.on || !location.isEnabled) {
+      print('SARTUN');
+      print('SARTUN');
       return (hard == true)? Future.error('Bluetootha eta ubikazioa aktibatu.') : Future.value();
     }
 

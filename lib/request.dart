@@ -1,7 +1,6 @@
 // ini.dart
 import 'dart:convert';
 import 'dart:async';
-import 'dart:math';
 import 'package:http/http.dart' as http;
 
 import 'data.dart';
@@ -21,7 +20,6 @@ class RequestService {
         final response = await http.get(Uri.parse(apiData));
 
         if (response.statusCode == 200) {
-          print(json.decode(response.body)['data'] as Map<String, dynamic>);
           return json.decode(response.body)['data'] as Map<String, dynamic>;
         }
 

@@ -10,7 +10,6 @@ import 'horizontal_dinamyc_slide.dart';
 import 'horizontal_dinamyc_slide_color.dart';
 import 'vertical_static_slide.dart';
 import 'info_widget.dart';
-//import 'reconnect_dialog.dart';
 import 'data.dart';
 import 'ble.dart';
 import 'helper.dart';
@@ -98,6 +97,13 @@ class _HomeState extends State<Home> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.white),
+                    tooltip: 'Menu',
+                    onPressed: () {
+                      // Add menu action here
+                    },
+                  ),
                   const SizedBox(width: 1),
                   const Text(
                     'Iratxo kudeaketa',
@@ -125,8 +131,6 @@ class _HomeState extends State<Home> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    //BleStatusWatcher(ble: ble),
-
                     const MiniActions(),
 
                     ExpandableSection(
