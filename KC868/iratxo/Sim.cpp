@@ -2,6 +2,7 @@
 #include <WiFi.h>
 #include <ArduinoJson.h>
 #include <ArduinoHttpClient.h>
+#include <Preferences.h>
 
 #define TINY_GSM_MODEM_SIM800
 #define OUTLIGHT_PIN 2
@@ -26,6 +27,7 @@ String cts            = "/api/iratxo/cts";
 
 bool                  connected = false;
 JsonDocument          data;
+extern Preferences    prefs;
 
 Sim::Sim() {
     Serial.println("SIM instance created");
@@ -37,7 +39,10 @@ void Sim::setWriteCallback(std::function<void(String)> cb) {
 
 void Sim::connect() {
 
-  WiFi.begin(ssid, password);
+  prefs.begin("iratxo", false);
+  WiFi.begin(prefs.getString("wifi_ssid", "Jesukristo"), prefs.getString("wifi_pass", "Bermio1982"));
+  prefs.end();
+
   unsigned long start = millis();
   while (WiFi.status() != WL_CONNECTED && millis() - start < wifi_timeout * 1000) delay(500);
 

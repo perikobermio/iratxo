@@ -1,4 +1,5 @@
 #include <ArduinoJson.h>
+#include <Preferences.h>
 #include "Ble.h"
 #include "Sim.h"
 
@@ -13,6 +14,7 @@ static unsigned long  lastRead                  = 0;
 
 Ble ble;
 Sim sim;
+Preferences prefs;
 
 void setPins() {
   pinMode(OUTLIGHT_PIN, OUTPUT);
@@ -20,20 +22,15 @@ void setPins() {
   digitalWrite(OUTLIGHT_PIN, LOW);
 }
 
-void readSwitchOutLight() {
-  if (digitalRead(SWITCH_OUTLIGHT_PIN) == LOW && (millis() - lastOutLightDebounceTime) > outLightdebounceDelay) {
-    lastOutLightDebounceTime = millis();
-    setWriteCallback(!digitalRead(OUTLIGHT_PIN) ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF");
+void setPrefs(JsonDocument* data) {
+  prefs.begin("iratxo", false);
+  for (JsonPair kv : (*data)["data"].as<JsonObject>()) {
+    prefs.putString(kv.key().c_str(), kv.value().as<String>());
   }
+  prefs.end();
 }
 
-void updateLastUpdate() {
-  if(last_update == 0)  last_update = sim.now();
-  else                  last_update = sim.now();
-  Serial.print("Updating last_update: "); Serial.println(last_update);
-}
-
-void setWriteCallback(String command) {
+void setWriteCallback(String command, JsonDocument* data = nullptr) {
   JsonDocument response;
 
   command.trim();
@@ -54,8 +51,9 @@ void setWriteCallback(String command) {
     response["message"]     = "Datuak ongi irakurrita";
     response["OUT_LIGHT"]   = digitalRead(OUTLIGHT_PIN);
 
-  } else if (command == "SYNC_TOGGLE") {
-    response["message"]     = "Sinkronizazioa aldatu";
+  } else if (command == "SET_PREFS") {
+    response["message"]     = "Preferentziak aldatu";
+    if(data) setPrefs(data);
 
   } else {
     response["message"]     = "COMMAND error";
@@ -66,13 +64,30 @@ void setWriteCallback(String command) {
   ble.sendNotify(response);
 }
 
+void readSwitchOutLight() {
+  if (digitalRead(SWITCH_OUTLIGHT_PIN) == LOW && (millis() - lastOutLightDebounceTime) > outLightdebounceDelay) {
+    lastOutLightDebounceTime = millis();
+    setWriteCallback(!digitalRead(OUTLIGHT_PIN) ? "OUT_LIGHT_ON" : "OUT_LIGHT_OFF");
+  }
+}
+
+void updateLastUpdate() {
+  if(last_update == 0)  last_update = sim.now();
+  else                  last_update = sim.now();
+  Serial.print("Updating last_update: "); Serial.println(last_update);
+}
+
 void setup() {
   Serial.begin(115200);
 
   setPins();
 
   ble.setWriteCallback([](String value) {
-    setWriteCallback(value);
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, value);
+
+    if (error)  setWriteCallback(value);
+    else        setWriteCallback(doc["action"].as<String>(), &doc);
   });
 
   sim.setWriteCallback([](String value) {
