@@ -10,6 +10,7 @@ import 'horizontal_dinamyc_slide.dart';
 import 'horizontal_dinamyc_slide_color.dart';
 import 'vertical_static_slide.dart';
 import 'info_widget.dart';
+import 'config.dart';
 import 'data.dart';
 import 'ble.dart';
 import 'helper.dart';
@@ -101,10 +102,9 @@ class _HomeState extends State<Home> {
                     icon: const Icon(Icons.menu, color: Colors.white),
                     tooltip: 'Menu',
                     onPressed: () {
-                      // Add menu action here
+                      Navigator.of(context).push(MaterialPageRoute( builder: (context) => const Config()));
                     },
                   ),
-                  const SizedBox(width: 1),
                   const Text(
                     'Iratxo kudeaketa',
                     style: TextStyle(

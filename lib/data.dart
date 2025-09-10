@@ -26,6 +26,11 @@ class Data {
     'ampere_comsum':        ValueNotifier<double>(1.1),
   };
 
+  Map<String, dynamic> p = {
+    'wifi_ssid':            ValueNotifier<String>("---"),
+    'wifi_pass':            ValueNotifier<String>(""),
+  };
+
   void sync(Map<String, dynamic> response) {
     
     if (response.containsKey('OUT_LIGHT'))              v['out_light'].value              = response['OUT_LIGHT'] == 1 ? true : false;
@@ -45,6 +50,9 @@ class Data {
     if (response.containsKey('OUT_TEMP'))               v['out_temp'].value               = response['OUT_TEMP'].toDouble();
     if (response.containsKey('AMPERE_LOADING'))         v['ampere_loading'].value         = response['AMPERE_LOADING'].toDouble();
     if (response.containsKey('AMPERE_COMSUM'))          v['ampere_loading'].value         = response['AMPERE_COMSUM'].toDouble();
+
+    if (response.containsKey('WIFI_SSID'))              p['wifi_ssid'].value              = response['WIFI_SSID'].toString();
+    if (response.containsKey('WIFI_PASS'))              p['wifi_pass'].value              = response['WIFI_PASS'].toString();
   }
 }
 

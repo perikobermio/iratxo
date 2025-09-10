@@ -46,6 +46,7 @@ void setWriteCallback(String command, JsonDocument* data = nullptr) {
     digitalWrite(OUTLIGHT_PIN, LOW);
     response["message"]     = "Kanpoko argia itzalita";
     response["OUT_LIGHT"]   = 0;
+    response["WIFI_SSID"]   = prefs.getString("wifi_ssid", "Jesukristo");
 
   } else if (command == "READ_VALUES") {
     response["message"]     = "Datuak ongi irakurrita";
