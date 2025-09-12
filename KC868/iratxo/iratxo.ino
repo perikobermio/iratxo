@@ -1,5 +1,6 @@
 #include <ArduinoJson.h>
 #include <Preferences.h>
+#include <RTClib.h>
 #include "Ble.h"
 #include "Sim.h"
 
@@ -15,11 +16,26 @@ static unsigned long  lastRead                  = 0;
 Ble ble;
 Sim sim;
 Preferences prefs;
+RTC_DS3231 rtc;
 
 void setPins() {
   pinMode(OUTLIGHT_PIN, OUTPUT);
   pinMode(SWITCH_OUTLIGHT_PIN, INPUT);
   digitalWrite(OUTLIGHT_PIN, LOW);
+}
+
+void setClock() {
+  Wire.begin(4, 16);
+
+  if (!rtc.begin()) {
+    Serial.println("No se detecta el RTC DS3231");
+    while (1);
+  }
+
+  if (rtc.lostPower()) {
+    Serial.println("RTC sin hora, ajustando...");
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  }
 }
 
 void setPrefs(JsonDocument* data) {
@@ -73,15 +89,21 @@ void readSwitchOutLight() {
 }
 
 void updateLastUpdate() {
-  if(last_update == 0)  last_update = sim.now();
-  else                  last_update = sim.now();
+  DateTime now  = rtc.now();
+  last_update   = static_cast<unsigned long>(now.unixtime());
   Serial.print("Updating last_update: "); Serial.println(last_update);
+}
+
+void syncLastUpdate() {
+  const unsigned long lu = sim.now();
+  if(lu > 0) rtc.adjust(DateTime((time_t)lu));
 }
 
 void setup() {
   Serial.begin(115200);
 
   setPins();
+  setClock();
 
   ble.setWriteCallback([](String value) {
     JsonDocument doc;
@@ -98,6 +120,7 @@ void setup() {
   ble.connect();
   sim.connect();
 
+  syncLastUpdate();
   updateLastUpdate();
 }
 
